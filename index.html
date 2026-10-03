@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>myInnerKid.app</title>
+    <title>myInnerKid.app - Header Test</title>
     <meta name="theme-color" content="#1a1818">
     <style>
         :root {
@@ -56,35 +56,83 @@
             }
         }
 
-        /* --- Header --- */
-        .app-header {
+        /* --- TEST-HEADER BEREICH --- */
+        .app-header-test {
+            display: flex;
+            flex-direction: column;
+            background-color: #1a1818;
+            border-bottom: 2px solid #3d3733;
+            z-index: 10;
+            flex-shrink: 0;
+            max-height: 48vh;
+            overflow-y: auto;
+            padding: 10px 15px;
+        }
+
+        .test-nav {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 12px 20px;
-            background-color: #1a1818;
-            border-bottom: 1px solid #2d2927;
-            z-index: 10;
-            flex-shrink: 0;
-        }
-        .brand-logo { text-align: center; flex-grow: 1; }
-        .logo-my { font-size: 1.1em; color: var(--text-dim); font-weight: 300; }
-        .logo-innerkid { font-size: 1.3em; color: var(--text-light); font-weight: 700; letter-spacing: 0.5px; }
-        .logo-app { font-size: 0.9em; color: #666; }
-        
-        .logo-tagline {
-            font-size: 10px;
-            color: var(--text-light);
-            font-weight: 400;
-            margin-top: 1px;
-            letter-spacing: 0.2px;
-            opacity: 0.85;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            border-bottom: 1px dashed #443e3a;
         }
 
-        .menu-btn {
-            background: none; border: none; color: var(--text-dim);
-            font-size: 22px; cursor: pointer; padding: 5px;
+        .test-badge {
+            font-size: 10px;
+            background: #ff4757;
+            color: #fff;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-weight: bold;
         }
+
+        .variant-box {
+            padding: 12px 10px;
+            margin-bottom: 10px;
+            background: #23201e;
+            border-radius: 12px;
+            border: 1px solid #332d2a;
+            text-align: center;
+            position: relative;
+        }
+
+        .variant-label {
+            position: absolute;
+            top: 4px;
+            left: 8px;
+            font-size: 9px;
+            color: #888;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        /* V1 Styling */
+        .v1-domain { font-size: 9px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 2px; margin-top: 6px; }
+        .v1-title { font-size: 1.3em; color: #fff; font-weight: 700; }
+        .v1-sub { font-size: 11px; color: var(--text-light); opacity: 0.9; margin-top: 2px; }
+
+        /* V2 Styling */
+        .v2-title { font-size: 1.3em; color: var(--text-light); font-weight: 700; margin-top: 6px; }
+        .v2-sub { font-size: 11px; color: #bbb; margin-bottom: 6px; }
+        .v2-pill { display: inline-block; background: #312c29; border: 1px solid #443e3a; border-radius: 12px; padding: 2px 10px; font-size: 10px; color: var(--text-light); font-weight: 500; }
+
+        /* V3 Styling */
+        .v3-title { font-size: 1.3em; color: #fff; font-weight: 700; margin-top: 6px; }
+        .v3-sub { font-size: 11px; color: var(--text-dim); }
+        .v3-domain { font-size: 10px; color: var(--text-light); margin-top: 4px; letter-spacing: 0.5px; opacity: 0.8; }
+
+        /* V4 Styling */
+        .v4-title-row { font-size: 1.2em; color: #fff; font-weight: 700; margin-top: 6px; }
+        .v4-domain { font-size: 0.8em; color: var(--text-light); font-weight: 400; opacity: 0.8; }
+        .v4-sub { font-size: 11px; color: var(--text-dim); margin-top: 2px; }
+
+        /* V5 Styling */
+        .v5-title { font-size: 1.4em; color: var(--text-light); font-weight: 800; letter-spacing: 0.3px; margin-top: 6px; }
+        .v5-sub { font-size: 11px; color: #ccc; font-style: italic; margin-top: 1px; }
+        .v5-domain { font-size: 9px; color: var(--text-dim); margin-top: 4px; text-transform: lowercase; }
+
 
         /* --- Setup Screen --- */
         #setup-screen {
@@ -95,10 +143,8 @@
         }
         
         .setup-logo { text-align: center; margin-bottom: 25px; }
-        .setup-logo .logo-my { font-size: 1.5em; }
-        .setup-logo .logo-innerkid { font-size: 1.9em; }
-        .setup-logo .logo-app { font-size: 1.1em; }
-        .setup-logo .logo-tagline { font-size: 13px; margin-top: 6px; }
+        .setup-logo .logo-title { font-size: 1.8em; color: var(--text-light); font-weight: 700; }
+        .setup-logo .logo-sub { font-size: 12px; color: var(--text-dim); margin-top: 4px; }
 
         .setup-disclaimer {
             background: rgba(255, 255, 255, 0.04);
@@ -117,32 +163,17 @@
         .selection-group { margin-bottom: 25px; width: 100%; display: flex; flex-direction: column; align-items: center; }
         .selection-title { text-align: center; font-size: 12px; color: var(--text-dim); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1.5px; }
         
-        .custom-select-wrapper {
-            position: relative;
-            width: 200px;
-        }
+        .custom-select-wrapper { position: relative; width: 200px; }
         
         .lang-select {
-            background-color: #24201e;
-            color: #fff;
-            border: 1px solid #3d3733;
-            padding: 12px 20px;
-            border-radius: 25px;
-            font-size: 15px;
-            width: 100%;
-            outline: none;
-            cursor: pointer;
-            appearance: none; 
-            text-align: center;
-            font-weight: 500;
+            background-color: #24201e; color: #fff; border: 1px solid #3d3733;
+            padding: 12px 20px; border-radius: 25px; font-size: 15px; width: 100%;
+            outline: none; cursor: pointer; appearance: none; text-align: center; font-weight: 500;
         }
 
         .options-row { display: flex; justify-content: center; gap: 30px; }
 
-        .option-item {
-            display: flex; flex-direction: column; align-items: center;
-            cursor: pointer; opacity: 0.5; transition: all 0.25s ease;
-        }
+        .option-item { display: flex; flex-direction: column; align-items: center; cursor: pointer; opacity: 0.5; transition: all 0.25s ease; }
         .option-item.active { opacity: 1; transform: scale(1.06); }
         .option-item p { font-size: 16px; font-weight: 600; margin-top: 12px; color: #eee; }
 
@@ -150,28 +181,17 @@
             width: 120px; height: 120px; border-radius: 50%; object-fit: cover;
             border: 3px solid transparent; background-color: #2a2522; box-shadow: 0 4px 15px rgba(0,0,0,0.4);
         }
-        .option-item.active .avatar-img { 
-            border-color: var(--text-light); 
-            box-shadow: 0 0 25px rgba(243, 213, 163, 0.3); 
-        }
+        .option-item.active .avatar-img { border-color: var(--text-light); box-shadow: 0 0 25px rgba(243, 213, 163, 0.3); }
 
         .start-btn {
             background-color: var(--text-light); color: #1a1818; border: none;
             padding: 16px 30px; border-radius: 25px; font-size: 16px; font-weight: bold;
-            cursor: pointer; width: 80%; max-width: 280px; box-shadow: 0 4px 12px rgba(243, 213, 163, 0.2);
-            margin-top: 5px;
+            cursor: pointer; width: 80%; max-width: 280px; box-shadow: 0 4px 12px rgba(243, 213, 163, 0.2); margin-top: 5px;
         }
 
         /* --- STAGE AREA --- */
-        #stage-area {
-            width: 100%; height: 40%; min-height: 250px;
-            background-color: #000; border-bottom: 3px solid #111; flex-shrink: 0;
-            position: relative;
-        }
-        #stage-image, #stage-video {
-            width: 100%; height: 100%; object-fit: cover; object-position: bottom center; display: none;
-            transition: opacity 0.4s ease-in-out;
-        }
+        #stage-area { width: 100%; height: 35%; min-height: 200px; background-color: #000; border-bottom: 3px solid #111; flex-shrink: 0; position: relative; }
+        #stage-image, #stage-video { width: 100%; height: 100%; object-fit: cover; object-position: bottom center; display: none; transition: opacity 0.4s ease-in-out; }
 
         .heart-badge {
             position: absolute; top: 12px; left: 12px;
@@ -185,55 +205,25 @@
         .heart-val { font-size: 11px; font-weight: 700; color: var(--text-light); letter-spacing: 0.3px; }
 
         /* --- Chat Area --- */
-        #chat-area {
-            flex-grow: 1; overflow-y: auto; padding: 16px;
-            display: flex; flex-direction: column; gap: 12px;
-            background-color: var(--bg-color); -webkit-overflow-scrolling: touch;
-        }
-        .message {
-            max-width: 82%; padding: 10px 14px; border-radius: 16px;
-            line-height: 1.45; font-size: 14px; position: relative; word-wrap: break-word;
-        }
-        .message-label {
-            font-size: 9px; font-weight: 700; margin-bottom: 3px; opacity: 0.55;
-            display: flex; justify-content: space-between; align-items: center;
-        }
+        #chat-area { flex-grow: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px; background-color: var(--bg-color); -webkit-overflow-scrolling: touch; }
+        .message { max-width: 82%; padding: 10px 14px; border-radius: 16px; line-height: 1.45; font-size: 14px; position: relative; word-wrap: break-word; }
+        .message-label { font-size: 9px; font-weight: 700; margin-bottom: 3px; opacity: 0.55; display: flex; justify-content: space-between; align-items: center; }
         .msg-user { background-color: var(--chat-user); color: #111; align-self: flex-end; border-bottom-right-radius: 4px; }
         .msg-ai { background-color: var(--chat-ai); color: #111; align-self: flex-start; border-bottom-left-radius: 4px; }
 
-        .audio-btn {
-            background: none; border: none; cursor: pointer; font-size: 12px;
-            opacity: 0.6; transition: opacity 0.2s; margin-left: 8px;
-        }
+        .audio-btn { background: none; border: none; cursor: pointer; font-size: 12px; opacity: 0.6; transition: opacity 0.2s; margin-left: 8px; }
         .audio-btn:hover { opacity: 1; }
 
         /* --- Input Area --- */
-        #input-area {
-            display: flex; align-items: center; padding: 12px 14px; background-color: #211e1c;
-            border-top: 1px solid #2d2927; flex-shrink: 0;
-        }
-        #chat-input {
-            flex-grow: 1; background-color: #312c29; border: 1px solid #423c38;
-            color: #fff; padding: 10px 16px; border-radius: 22px; font-size: 14px; outline: none;
-        }
+        #input-area { display: flex; align-items: center; padding: 12px 14px; background-color: #211e1c; border-top: 1px solid #2d2927; flex-shrink: 0; }
+        #chat-input { flex-grow: 1; background-color: #312c29; border: 1px solid #423c38; color: #fff; padding: 10px 16px; border-radius: 22px; font-size: 14px; outline: none; }
 
-        #send-btn {
-            background-color: var(--chat-user); color: #1a1818; border: none;
-            width: 42px; height: 42px; border-radius: 50%; margin-left: 8px; cursor: pointer;
-            display: flex; justify-content: center; align-items: center; flex-shrink: 0;
-        }
+        #send-btn { background-color: var(--chat-user); color: #1a1818; border: none; width: 42px; height: 42px; border-radius: 50%; margin-left: 8px; cursor: pointer; display: flex; justify-content: center; align-items: center; flex-shrink: 0; }
         #send-btn svg { width: 18px; height: 18px; fill: #1a1818; }
 
         /* --- Modals --- */
-        .modal-overlay {
-            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.82); z-index: 200; display: none;
-            justify-content: center; align-items: center;
-        }
-        .modal-content {
-            background-color: var(--modal-bg); width: 85%; max-height: 80vh; overflow-y: auto; border-radius: 20px;
-            padding: 25px 22px; position: relative; border: 1px solid #443e3a;
-        }
+        .modal-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.82); z-index: 200; display: none; justify-content: center; align-items: center; }
+        .modal-content { background-color: var(--modal-bg); width: 85%; max-height: 80vh; overflow-y: auto; border-radius: 20px; padding: 25px 22px; position: relative; border: 1px solid #443e3a; }
         .modal-close { position: absolute; top: 12px; right: 14px; background: none; border: none; color: var(--text-dim); font-size: 26px; cursor: pointer; }
         .modal-title { color: var(--text-light); margin-bottom: 15px; font-size: 18px; text-align: center; }
         .modal-text { color: #ddd; font-size: 14px; line-height: 1.5; margin-bottom: 20px; }
@@ -244,7 +234,8 @@
         
         .support-btn { background-color: var(--text-light); color: #1a1818; padding: 12px; border-radius: 14px; text-align: center; font-weight: bold; width: 100%; border: none; cursor: pointer; margin-top: 10px; }
 
-        /* --- Album Gallery --- */
+        .menu-btn { background: none; border: none; color: var(--text-dim); font-size: 22px; cursor: pointer; padding: 5px; }
+
         .album-counter { text-align: center; font-size: 12px; color: var(--text-dim); margin-bottom: 15px; letter-spacing: 0.5px; text-transform: uppercase; }
         .album-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 10px; }
         .album-card { background-color: #211e1c; border: 1px solid #3d3733; border-radius: 14px; overflow: hidden; display: flex; flex-direction: column; align-items: center; position: relative; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
@@ -259,20 +250,58 @@
 
 <div id="app-container">
 
-    <header class="app-header">
-        <div style="width: 24px;"></div> 
-        <div class="brand-logo">
-            <div><span class="logo-my">my</span><span class="logo-innerkid">InnerKid</span><span class="logo-app">.app</span></div>
-            <div class="logo-tagline" id="header-tagline">Sprich mit deinem 5-jährigen Ich!</div>
+    <!-- TEST-HEADER MIT ALLEN 5 VARIANTEN -->
+    <div class="app-header-test">
+        <div class="test-nav">
+            <span class="test-badge">HEADER TEST</span>
+            <button class="menu-btn" onclick="openModal('menu-modal')">☰ Menü</button>
         </div>
-        <button class="menu-btn" onclick="openModal('menu-modal')">☰</button>
-    </header>
+
+        <!-- VARIANTE 1 -->
+        <div class="variant-box">
+            <div class="variant-label">Variante 1: Klassisch gestapelt</div>
+            <div class="v1-domain">myInnerKid.app</div>
+            <div class="v1-title title-text">Mein inneres Kind</div>
+            <div class="v1-sub sub-text">Sprich mit deinem 5-jährigen Ich!</div>
+        </div>
+
+        <!-- VARIANTE 2 -->
+        <div class="variant-box">
+            <div class="variant-label">Variante 2: Modernes Pill-Badge</div>
+            <div class="v2-title title-text">Mein inneres Kind</div>
+            <div class="v2-sub sub-text">Sprich mit deinem 5-jährigen Ich!</div>
+            <div class="v2-pill">🌐 myInnerKid.app</div>
+        </div>
+
+        <!-- VARIANTE 3 -->
+        <div class="variant-box">
+            <div class="variant-label">Variante 3: Domain-Abschluss</div>
+            <div class="v3-title title-text">Mein inneres Kind</div>
+            <div class="v3-sub sub-text">Sprich mit deinem 5-jährigen Ich!</div>
+            <div class="v3-domain">— myInnerKid.app —</div>
+        </div>
+
+        <!-- VARIANTE 4 -->
+        <div class="variant-box">
+            <div class="variant-label">Variante 4: Inline-Kombination</div>
+            <div class="v4-title-row"><span class="title-text">Mein inneres Kind</span> <span class="v4-domain">· myInnerKid.app</span></div>
+            <div class="v4-sub sub-text">Sprich mit deinem 5-jährigen Ich!</div>
+        </div>
+
+        <!-- VARIANTE 5 -->
+        <div class="variant-box">
+            <div class="variant-label">Variante 5: Meditations-Style</div>
+            <div class="v5-title title-text">Mein inneres Kind</div>
+            <div class="v5-sub sub-text">Sprich mit deinem 5-jährigen Ich!</div>
+            <div class="v5-domain">myinnerkid.app</div>
+        </div>
+    </div>
 
     <!-- Setup Screen -->
     <div id="setup-screen">
         <div class="setup-logo">
-            <div><span class="logo-my">my</span><span class="logo-innerkid">InnerKid</span><span class="logo-app">.app</span></div>
-            <div class="logo-tagline" id="setup-tagline">Sprich mit deinem 5-jährigen Ich!</div>
+            <div class="logo-title title-text">Mein inneres Kind</div>
+            <div class="logo-sub sub-text">Sprich mit deinem 5-jährigen Ich!</div>
         </div>
 
         <div class="setup-disclaimer" id="setup-disclaimer">
@@ -438,7 +467,6 @@
     let discoveredStages = ['neutral'];
     let bondingProgress = 0;
 
-    /* WEB AUDIO API CONTEXT (Entsperrt iOS Safari sauber beim Klick) */
     let audioCtx = null;
 
     function unlockMobileAudio() {
@@ -508,6 +536,23 @@
         
         document.getElementById('language-select-setup').value = lang;
         document.getElementById('language-select-menu').value = lang;
+
+        let titleStr = "Mein inneres Kind";
+        let subStr = "Sprich mit deinem 5-jährigen Ich!";
+
+        if(lang === 'en') {
+            titleStr = "My Inner Child";
+            subStr = "Talk to your 5-year-old self!";
+        } else if(lang === 'es') {
+            titleStr = "Mi niño interior";
+            subStr = "¡Habla con tu yo de 5 años!";
+        } else if(lang === 'fr') {
+            titleStr = "Mon enfant intérieur";
+            subStr = "Parle à ton toi de 5 ans !";
+        }
+
+        document.querySelectorAll('.title-text').forEach(el => el.innerText = titleStr);
+        document.querySelectorAll('.sub-text').forEach(el => el.innerText = subStr);
         
         const btn = document.getElementById('start-btn-text');
         const placeholder = document.getElementById('chat-input');
@@ -527,9 +572,6 @@
 
         const albumModalTitle = document.getElementById('album-modal-title');
         const albumCloseBtn = document.getElementById('album-close-btn');
-
-        const headerTagline = document.getElementById('header-tagline');
-        const setupTagline = document.getElementById('setup-tagline');
 
         if(lang === 'en') {
             btn.innerText = "Save & Enter";
@@ -551,9 +593,6 @@
 
             if(albumModalTitle) albumModalTitle.innerText = "My Memories";
             if(albumCloseBtn) albumCloseBtn.innerText = "Close";
-
-            if(headerTagline) headerTagline.innerText = "Talk to your 5-year-old self!";
-            if(setupTagline) setupTagline.innerText = "Talk to your 5-year-old self!";
         }
         else if(lang === 'es') {
             btn.innerText = "Guardar y Entrar";
@@ -575,9 +614,6 @@
 
             if(albumModalTitle) albumModalTitle.innerText = "Mis Recuerdos";
             if(albumCloseBtn) albumCloseBtn.innerText = "Cerrar";
-
-            if(headerTagline) headerTagline.innerText = "¡Habla con tu yo de 5 años!";
-            if(setupTagline) setupTagline.innerText = "¡Habla con tu yo de 5 años!";
         }
         else if(lang === 'fr') {
             btn.innerText = "Enregistrer et Entrer";
@@ -599,9 +635,6 @@
 
             if(albumModalTitle) albumModalTitle.innerText = "Mes Souvenirs";
             if(albumCloseBtn) albumCloseBtn.innerText = "Fermer";
-
-            if(headerTagline) headerTagline.innerText = "Parle à ton toi de 5 ans !";
-            if(setupTagline) setupTagline.innerText = "Parle à ton toi de 5 ans !";
         }
         else {
             btn.innerText = "Speichern & Betreten";
@@ -623,9 +656,6 @@
 
             if(albumModalTitle) albumModalTitle.innerText = "Meine Erinnerungen";
             if(albumCloseBtn) albumCloseBtn.innerText = "Schließen";
-
-            if(headerTagline) headerTagline.innerText = "Sprich mit deinem 5-jährigen Ich!";
-            if(setupTagline) setupTagline.innerText = "Sprich mit deinem 5-jährigen Ich!";
         }
         
         localStorage.setItem('myInnerKid_settings', JSON.stringify(userSettings));
@@ -786,7 +816,6 @@
         counterElem.innerText = `${count} / ${allActivities.length} ${labelText}`;
     }
 
-    /* --- DYNAMISCHE ROTIERENDE BEGRÜSSUNGEN --- */
     function getGreeting(lang) {
         const greetings = {
             de: [
@@ -824,7 +853,6 @@
         return list[randomIndex];
     }
 
-    /* --- ELEVENLABS SPRACHAUSGABE --- */
     async function speakText(text) {
         if (!text) return;
 
