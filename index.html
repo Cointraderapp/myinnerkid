@@ -366,6 +366,17 @@
                 <li onclick="openModalFromMenu('privacy-modal')" id="menu-privacy">🔒 Datenschutz</li>
                 <li onclick="openModalFromMenu('impressum-modal')" id="menu-impressum">📝 Impressum</li>
             </ul>
+
+            <!-- Besuchs-Zähler Widget -->
+            <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #38322e; text-align: center;">
+                <!-- hitwebcounter Code START -->
+                <a href="https://www.hitwebcounter.com/" target="_blank" rel="noopener" title="Website">
+                    <img src="https://www.hitwebcounter.com/counter/counter.php?page=21522234&amp;style=0011&amp;nbdigits=5&amp;type=page" alt="Website" decoding="async" style="border:0;max-width:100%;height:auto;" />
+                </a>
+                <br />
+                <a href="https://www.hitwebcounter.com/character-counter" target="_blank" rel="noopener" style="font-family:Geneva, Arial, Helvetica;font-size:10px;color:#B3B7B3;text-decoration:underline;font-weight:normal;">Characters Total</a>
+                <!-- hitwebcounter Code END -->
+            </div>
         </div>
     </div>
 
@@ -762,7 +773,7 @@
             menuImpressum.innerHTML = "📝 Mentions légales";
 
             if(confirmTitle) confirmTitle.innerText = "Réinitialiser les Souvenirs";
-            if(confirmText) confirmText.innerText = "Veux-tu vraiment réinitialiser tous les souvenirs débloqués ?";
+            if(confirmText) confirmText.innerText = "Veux-tu wirklich réinitialiser tous les souvenirs débloqués ?";
             if(confirmCancel) confirmCancel.innerText = "Annuler";
             if(confirmOk) confirmOk.innerText = "Réinitialiser";
 
@@ -785,7 +796,7 @@
             menuLangLabel.innerText = "Sprache";
             if(menuFaq) menuFaq.innerHTML = "💡 App-Idee & FAQ";
             menuRestart.innerHTML = "🔄 Mini-Ich neu starten";
-            menuAlbum.innerHTML = "🖼️️ Meine Erinnerungen";
+            menuAlbum.innerHTML = "🖼️ Meine Erinnerungen";
             menuResetMemories.innerHTML = "🗑️ Erinnerungen zurücksetzen";
             menuPrivacy.innerHTML = "🔒 Datenschutz";
             menuImpressum.innerHTML = "📝 Impressum";
