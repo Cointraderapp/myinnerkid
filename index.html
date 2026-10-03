@@ -304,7 +304,7 @@
         </div>
     </div>
 
-    <!-- Bestätigungs-Modal für Zurücksetzen (App-Design) -->
+    <!-- Bestätigungs-Modal für Zurücksetzen -->
     <div class="modal-overlay" id="confirm-modal">
         <div class="modal-content" style="text-align: center; max-width: 320px;">
             <h3 class="modal-title" id="confirm-modal-title">Erinnerungen zurücksetzen</h3>
@@ -367,7 +367,7 @@
         </div>
     </div>
 
-    <!-- Datenschutz Modal (Nur mit Button "Verstanden" unten) -->
+    <!-- Datenschutz Modal -->
     <div class="modal-overlay" id="privacy-modal">
         <div class="modal-content">
             <h3 class="modal-title" id="privacy-modal-title">Datenschutz</h3>
@@ -420,10 +420,10 @@
     /* Google Gemini API Key */
     const apiKey = "AQ.Ab8RN6JnEsoxCVeVFAHzNxplxJPZwNll5ank6zb6KLIjEPTImw";
 
-    /* ElevenLabs API Einstellungen mit voll kompatiblen Free-Tier Standardstimmen */
+    /* ElevenLabs API Einstellungen - Voll kompatible Free-Tier Standardstimmen */
     const elevenLabsApiKey = "sk_e9fed003bce3469d83a50231c70b117b197f7738b43c17d1"; 
-    const elevenLabsVoiceBoy = "MF3mGyEYCl7XYWbV9V6O";  // Elli (Standard Premade - Sanfte Basis)
-    const elevenLabsVoiceGirl = "EXAVITQu4vr4xnSDxMaL"; // Bella (Standard Premade)
+    const elevenLabsVoiceBoy = "pNInz6obpgDQGcFmaJgB";  // Adam (Standard Premade - Free Tier)
+    const elevenLabsVoiceGirl = "EXAVITQu4vr4xnSDxMaL"; // Bella (Standard Premade - Free Tier)
 
     let userSettings = { gender: 'girl', language: 'de' };
     let chatHistory = [];
@@ -902,8 +902,8 @@
 
                     /* KINDLICHER PITCH- & SPEED-EFFEKT (Web Audio API) */
                     if (userSettings.gender === 'boy') {
-                        source.detune.value = 380;       // +3.8 Halbtonschritte höher (kindlicher Ton)
-                        source.playbackRate.value = 1.12; // 12% schneller (lebhaftes Kind)
+                        source.detune.value = 380;       // +3.8 Halbtonschritte höher
+                        source.playbackRate.value = 1.12; // 12% schneller
                     } else {
                         source.detune.value = 340;       // +3.4 Halbtonschritte höher
                         source.playbackRate.value = 1.10; // 10% schneller
@@ -1004,7 +1004,7 @@
 
         const systemPrompt = `Du bist das 5-jährige innere Kind des Nutzers. Du bist ein kleines 5-jähriges ${userSettings.gender === 'girl' ? 'Mädchen' : 'Junge'}. Sprich sehr warm, emotional, liebevoll, vertraut und kindlich ehrlich (max. 2 Sätze). WICHTIG: Variiere deine Worte und wiederhole NIEMALS Fragen oder Floskeln, die du im Gesprächsverlauf bereits gesagt hast. Reagiere direkt und natürlich auf die Antworten des Nutzers. ${langInstruction}
 
-SICHERHEITSHINWEIS & SCHUTZSCHILD: Du führst ausschließlich liebevolle, kindgerechte und konstruktive Gespräche über Erinnerungen, Geborgenheit, Achtsamkeit und Gefühle der Selbsterkenntnis. Sollte der Nutzer unangebrachte, anstößige, grenzüberschreitende oder schädliche Themen ansprechen, verlasse sofort deine Rolle und antworte kurz und neutral: "Über solche Themen möchte ich nicht sprechen."
+SICHERHEITSHINWEIS & SCHUTZSCHILD: Du führst ausschließlich liebevolle, kindgerechte und konstruktive Gespräche über Erinnerungen, Geborgenheit, Achtsamkeit und Gefühle der Selbsterkenntnis. Sollte der Nutzer unangebrachte, anstößige, grenzüberschreitende oder schädliche Themen ansprechen, verlasse sofort deine Rolle und antworte kurz und neutral: "Über solche Themen möchte ich not sprechen."
 
 SZENEN-STEUERUNG: Wenn das Gespräch zu einer der folgenden Szenen passt oder dahin wechselt, hänge am allerletzten Ende deiner Nachricht UNBEDINGT genau einen dieser Tags an:
 - [STAGE:malen] (wenn ihr malt, zeichnet, Stifte nutzt oder bastelt)
