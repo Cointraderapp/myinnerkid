@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>myInnerKid.app</title>
+    <meta name="theme-color" content="#1a1818">
+    <style>
+        :root {
+            --bg-color: #1a1818;
+            --text-light: #f3d5a3;
+            --text-dim: #a0a0a0;
+            --chat-user: #cce0eb;
+            --chat-ai: #e8dbce;
+            --modal-bg: #2a2522;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: #0e0d0d;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            min-height: 100dvh;
+            overflow: hidden;
+        }
+
+        #app-container {
+            width: 100%;
+            max-width: 430px;
+            height: 100vh;
+            height: 100dvh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            background-color: var(--bg-color);
+            overflow: hidden;
+        }
+
+        @media (min-width: 480px) and (min-height: 700px) {
+            #app-container {
+                height: 860px;
+                max-height: 92vh;
+                border-radius: 40px;
+                border: 10px solid #2c2826;
+                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+            }
+        }
+
+        /* --- Header --- */
+        .app-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 20px;
+            background-color: #1a1818;
+            border-bottom: 1px solid #2d2927;
+            z-index: 10;
+            flex-shrink: 0;
+        }
+        .brand-logo { text-align: center; flex-grow: 1; }
+        .logo-my { font-size: 1.1em; color: var(--text-dim); font-weight: 300; }
+        .logo-innerkid { font-size: 1.3em; color: var(--text-light); font-weight: 700; letter-spacing: 0.5px; }
+        .logo-app { font-size: 0.9em; color: #666; }
+        
+        .logo-tagline {
+            font-size: 10px;
+            color: var(--text-light);
+            font-weight: 400;
+            margin-top: 1px;
+            letter-spacing: 0.2px;
+            opacity: 0.85;
+        }
+
+        .menu-btn {
+            background: none; border: none; color: var(--text-dim);
+            font-size: 22px; cursor: pointer; padding: 5px;
+        }
+
+        /* --- Setup Screen --- */
+        #setup-screen {
+            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: var(--bg-color); z-index: 100;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            padding: 30px 20px; overflow-y: auto;
+        }
+        
+        .setup-logo { text-align: center; margin-bottom: 25px; }
+        .setup-logo .logo-my { font-size: 1.5em; }
+        .setup-logo .logo-innerkid { font-size: 1.9em; }
+        .setup-logo .logo-app { font-size: 1.1em; }
+        .setup-logo .logo-tagline { font-size: 13px; margin-top: 6px; }
+
+        .setup-disclaimer {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(243, 213, 163, 0.2);
+            border-radius: 16px;
+            padding: 12px 16px;
+            margin-bottom: 25px;
+            font-size: 11px;
+            line-height: 1.5;
+            color: #c0b8b2;
+            text-align: center;
+            max-width: 310px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .selection-group { margin-bottom: 25px; width: 100%; display: flex; flex-direction: column; align-items: center; }
+        .selection-title { text-align: center; font-size: 12px; color: var(--text-dim); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1.5px; }
+        
+        .custom-select-wrapper {
+            position: relative;
+            width: 200px;
+        }
+        
+        .lang-select {
+            background-color: #24201e;
+            color: #fff;
+            border: 1px solid #3d3733;
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-size: 15px;
+            width: 100%;
+            outline: none;
+            cursor: pointer;
+            appearance: none; 
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .options-row { display: flex; justify-content: center; gap: 30px; }
+
+        .option-item {
+            display: flex; flex-direction: column; align-items: center;
+            cursor: pointer; opacity: 0.5; transition: all 0.25s ease;
+        }
+        .option-item.active { opacity: 1; transform: scale(1.06); }
+        .option-item p { font-size: 16px; font-weight: 600; margin-top: 12px; color: #eee; }
+
+        .avatar-img {
+            width: 120px; height: 120px; border-radius: 50%; object-fit: cover;
+            border: 3px solid transparent; background-color: #2a2522; box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+        }
+        .option-item.active .avatar-img { 
+            border-color: var(--text-light); 
+            box-shadow: 0 0 25px rgba(243, 213, 163, 0.3); 
+        }
+
+        .start-btn {
+            background-color: var(--text-light); color: #1a1818; border: none;
+            padding: 16px 30px; border-radius: 25px; font-size: 16px; font-weight: bold;
+            cursor: pointer; width: 80%; max-width: 280px; box-shadow: 0 4px 12px rgba(243, 213, 163, 0.2);
+            margin-top: 5px;
+        }
+
+        /* --- STAGE AREA --- */
+        #stage-area {
+            width: 100%; height: 40%; min-height: 250px;
+            background-color: #000; border-bottom: 3px solid #111; flex-shrink: 0;
+            position: relative;
+        }
+        #stage-image, #stage-video {
+            width: 100%; height: 100%; object-fit: cover; object-position: bottom center; display: none;
+            transition: opacity 0.4s ease-in-out;
+        }
+
+        .heart-badge {
+            position: absolute; top: 12px; left: 12px;
+            background: rgba(20, 18, 17, 0.65); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 20px; padding: 5px 11px;
+            display: flex; align-items: center; gap: 6px; z-index: 20; box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); cursor: pointer;
+        }
+        .heart-badge.beat { transform: scale(1.25); }
+        .heart-svg { width: 18px; height: 18px; display: block; }
+        .heart-val { font-size: 11px; font-weight: 700; color: var(--text-light); letter-spacing: 0.3px; }
+
+        /* --- Chat Area --- */
+        #chat-area {
+            flex-grow: 1; overflow-y: auto; padding: 16px;
+            display: flex; flex-direction: column; gap: 12px;
+            background-color: var(--bg-color); -webkit-overflow-scrolling: touch;
+        }
+        .message {
+            max-width: 82%; padding: 10px 14px; border-radius: 16px;
+            line-height: 1.45; font-size: 14px; position: relative; word-wrap: break-word;
+        }
+        .message-label {
+            font-size: 9px; font-weight: 700; margin-bottom: 3px; opacity: 0.55;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .msg-user { background-color: var(--chat-user); color: #111; align-self: flex-end; border-bottom-right-radius: 4px; }
+        .msg-ai { background-color: var(--chat-ai); color: #111; align-self: flex-start; border-bottom-left-radius: 4px; }
+
+        .audio-btn {
+            background: none; border: none; cursor: pointer; font-size: 12px;
+            opacity: 0.6; transition: opacity 0.2s; margin-left: 8px;
+        }
+        .audio-btn:hover { opacity: 1; }
+
+        /* --- Input Area --- */
+        #input-area {
+            display: flex; align-items: center; padding: 12px 14px; background-color: #211e1c;
+            border-top: 1px solid #2d2927; flex-shrink: 0;
+        }
+        #chat-input {
+            flex-grow: 1; background-color: #312c29; border: 1px solid #423c38;
+            color: #fff; padding: 10px 16px; border-radius: 22px; font-size: 14px; outline: none;
+        }
+
+        #send-btn {
+            background-color: var(--chat-user); color: #1a1818; border: none;
+            width: 42px; height: 42px; border-radius: 50%; margin-left: 8px; cursor: pointer;
+            display: flex; justify-content: center; align-items: center; flex-shrink: 0;
+        }
+        #send-btn svg { width: 18px; height: 18px; fill: #1a1818; }
+
+        /* --- Modals --- */
+        .modal-overlay {
+            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.82); z-index: 200; display: none;
+            justify-content: center; align-items: center;
+        }
+        .modal-content {
+            background-color: var(--modal-bg); width: 85%; max-height: 80vh; overflow-y: auto; border-radius: 20px;
+            padding: 25px 22px; position: relative; border: 1px solid #443e3a;
+        }
+        .modal-close { position: absolute; top: 12px; right: 14px; background: none; border: none; color: var(--text-dim); font-size: 26px; cursor: pointer; }
+        .modal-title { color: var(--text-light); margin-bottom: 15px; font-size: 18px; text-align: center; }
+        .modal-text { color: #ddd; font-size: 14px; line-height: 1.5; margin-bottom: 20px; }
+        
+        .menu-list { list-style: none; }
+        .menu-list li { padding: 16px 0; border-bottom: 1px solid #38322e; color: #fff; font-size: 15px; cursor: pointer; display: flex; align-items: center; gap: 10px; }
+        .menu-list li:last-child { border-bottom: none; }
+        
+        .support-btn { background-color: var(--text-light); color: #1a1818; padding: 12px; border-radius: 14px; text-align: center; font-weight: bold; width: 100%; border: none; cursor: pointer; margin-top: 10px; }
+
+        /* --- Album Gallery --- */
+        .album-counter { text-align: center; font-size: 12px; color: var(--text-dim); margin-bottom: 15px; letter-spacing: 0.5px; text-transform: uppercase; }
+        .album-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 10px; }
+        .album-card { background-color: #211e1c; border: 1px solid #3d3733; border-radius: 14px; overflow: hidden; display: flex; flex-direction: column; align-items: center; position: relative; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        .album-card img, .album-card video { width: 100%; height: 105px; object-fit: cover; display: block; }
+        .album-card.locked img, .album-card.locked video { filter: grayscale(100%) blur(4px); opacity: 0.25; }
+        .album-card-title { font-size: 11px; font-weight: 600; padding: 8px 6px; text-align: center; color: var(--text-light); width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .album-card.locked .album-card-title { color: var(--text-dim); }
+        .lock-badge { position: absolute; top: 35px; font-size: 26px; opacity: 0.8; z-index: 2; }
+    </style>
+</head>
+<body>
+
+<div id="app-container">
+
+    <header class="app-header">
+        <div style="width: 24px;"></div> 
+        <div class="brand-logo">
+            <div><span class="logo-my">my</span><span class="logo-innerkid">InnerKid</span><span class="logo-app">.app</span></div>
+            <div class="logo-tagline" id="header-tagline">Sprich mit deinem 5-jährigen Ich!</div>
+        </div>
+        <button class="menu-btn" onclick="openModal('menu-modal')">☰</button>
+    </header>
+
+    <!-- Setup Screen -->
+    <div id="setup-screen">
+        <div class="setup-logo">
+            <div><span class="logo-my">my</span><span class="logo-innerkid">InnerKid</span><span class="logo-app">.app</span></div>
+            <div class="logo-tagline" id="setup-tagline">Sprich mit deinem 5-jährigen Ich!</div>
+        </div>
+
+        <div class="setup-disclaimer" id="setup-disclaimer">
+            Die myInnerKid.app ist ein Tool zur persönlichen Selbstreflexion und Achtsamkeit. Die Anwendung ersetzt keine psychotherapeutische oder medizinische Behandlung.
+        </div>
+
+        <div class="selection-group">
+            <div class="selection-title" id="setup-lang-label">Sprache / Language</div>
+            <div class="custom-select-wrapper">
+                <select id="language-select-setup" class="lang-select" onchange="changeLanguage(this.value)">
+                    <option value="de" selected>🇩🇪 Deutsch</option>
+                    <option value="en">🇬🇧 English</option>
+                    <option value="es">🇪🇸 Español</option>
+                    <option value="fr">🇫🇷 Français</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="selection-group">
+            <div class="selection-title" id="setup-minime-label">Mini-Ich auswählen</div>
+            <div class="options-row">
+                <div class="option-item active" id="gender-girl" onclick="selectGender('girl')">
+                    <img src="maedchen.png" alt="Mädchen" class="avatar-img" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'120\' height=\'120\'><rect width=\'120\' height=\'120\' fill=\'%23cce0eb\'/><text x=\'50%\' y=\'50%\' font-size=\'50\' text-anchor=\'middle\' dy=\'.3em\'>👧</text></svg>'">
+                    <p id="label-girl">Mädchen</p>
+                </div>
+                <div class="option-item" id="gender-boy" onclick="selectGender('boy')">
+                    <img src="junge.png" alt="Junge" class="avatar-img" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'120\' height=\'120\'><rect width=\'120\' height=\'120\' fill=\'%23f5f0e6\'/><text x=\'50%\' y=\'50%\' font-size=\'50\' text-anchor=\'middle\' dy=\'.3em\'>👦</text></svg>'">
+                    <p id="label-boy">Junge</p>
+                </div>
+            </div>
+        </div>
+
+        <button class="start-btn" id="start-btn-text" onclick="unlockMobileAudio(); startApp();">Speichern & Betreten</button>
+    </div>
+
+    <!-- Bühnenbild -->
+    <div id="stage-area">
+        <div class="heart-badge" id="heart-badge" onclick="alert(getHeartAlertText())">
+            <svg class="heart-svg" viewBox="0 0 24 24">
+                <defs>
+                    <linearGradient id="heart-grad" x1="0%" y1="100%" x2="0%" y2="0%">
+                        <stop offset="0%" stop-color="#ff4757" id="heart-stop1" />
+                        <stop offset="0%" stop-color="#4a433e" id="heart-stop2" />
+                    </linearGradient>
+                </defs>
+                <path fill="url(#heart-grad)" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+            </svg>
+            <span class="heart-val" id="heart-val">0%</span>
+        </div>
+
+        <img id="stage-image" src="" alt="Bühne">
+        <video id="stage-video" autoplay loop muted playsinline></video>
+    </div>
+
+    <div id="chat-area"></div>
+
+    <div id="input-area">
+        <input type="text" id="chat-input" placeholder="Schreibe deinem Mini-Ich..." onkeypress="handleEnter(event)">
+        <button id="send-btn" onclick="unlockMobileAudio(); sendMessage();">
+            <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+        </button>
+    </div>
+
+    <!-- Burgermenü Modal -->
+    <div class="modal-overlay" id="menu-modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('menu-modal')">×</button>
+            <h3 class="modal-title" id="menu-title">Menü</h3>
+            
+            <div style="margin-bottom: 25px; display: flex; flex-direction: column; align-items: center;">
+                <div id="menu-lang-label" style="font-size: 11px; color: var(--text-dim); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px;">Sprache / Language</div>
+                <select id="language-select-menu" class="lang-select" onchange="changeLanguage(this.value)" style="width: 80%; padding: 10px 15px; font-size: 14px;">
+                    <option value="de">🇩🇪 Deutsch</option>
+                    <option value="en">🇬🇧 English</option>
+                    <option value="es">🇪🇸 Español</option>
+                    <option value="fr">🇫🇷 Français</option>
+                </select>
+            </div>
+            
+            <hr style="border: 0; border-top: 1px solid #38322e; margin-bottom: 10px;">
+
+            <ul class="menu-list">
+                <li onclick="restartApp()" id="menu-restart">🔄 Mini-Ich neu starten</li>
+                <li onclick="openModalFromMenu('album-modal'); renderAlbum();" id="menu-album">🖼️ Meine Erinnerungen</li>
+                <li onclick="resetMemories()" id="menu-reset-memories">🗑️ Erinnerungen zurücksetzen</li>
+                <li onclick="openModalFromMenu('privacy-modal')" id="menu-privacy">🔒 Datenschutz</li>
+                <li onclick="openModalFromMenu('impressum-modal')" id="menu-impressum">📝 Impressum</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Erinnerungs-Album Modal -->
+    <div class="modal-overlay" id="album-modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('album-modal')">×</button>
+            <h3 class="modal-title" id="album-modal-title">Meine Erinnerungen</h3>
+            <div class="album-counter" id="album-counter">0 / 4 Momente entdeckt</div>
+            <div class="album-grid" id="album-grid"></div>
+            <button class="support-btn" onclick="closeModal('album-modal')" id="album-close-btn">Schließen</button>
+        </div>
+    </div>
+
+    <!-- Datenschutz Modal -->
+    <div class="modal-overlay" id="privacy-modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('privacy-modal')">×</button>
+            <h3 class="modal-title">Datenschutz</h3>
+            <div class="modal-text">
+                <strong>Dein Raum ist sicher.</strong><br><br>
+                Alle Chat-Verläufe und Einstellungen werden ausschließlich lokal auf deinem Gerät (in deinem Browser) gespeichert.<br><br>
+                Es gibt keine Benutzerdatenbank und wir speichern keine persönlichen Daten auf unseren Servern. Um die Antworten zu generieren, kommuniziert die App verschlüsselt mit der Google Gemini Schnittstelle.
+            </div>
+            <button class="support-btn" onclick="closeModal('privacy-modal')">Verstanden</button>
+        </div>
+    </div>
+
+    <!-- Impressum Modal -->
+    <div class="modal-overlay" id="impressum-modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('impressum-modal')">Schließen</button>
+            <h3 class="modal-title">Impressum</h3>
+            <div class="modal-text" style="font-size: 13px; line-height: 1.6;">
+                <strong>Angaben gemäß § 5 DDG</strong><br>
+                Stephan Herrmann<br>
+                Sondershäuser Straße 36<br>
+                99091 Erfurt<br><br>
+                <strong>Kontakt</strong><br>
+                Telefon: +49 157 57790198<br>
+                E-Mail: herrmann.stephan@gmx.de<br><br>
+                <strong>Geltungsbereich für Social Media</strong><br>
+                Dieses Impressum gilt auch für folgende Social-Media-Präsenzen auf Instagram:<br>
+                @myinnerkid.app<br><br>
+                <strong>Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV</strong><br>
+                Stephan Herrmann<br>
+                Sondershäuser Straße 36<br>
+                99091 Erfurt<br><br>
+                <strong>EU-Streitschlichtung</strong><br>
+                Die Europäische Kommission stellt eine Plattform zur Online-Streitbeilegung (OS) bereit: 
+                <a href="https://ec.europa.eu/consumers/odr/" target="_blank" style="color: var(--text-light); word-break: break-all;">https://ec.europa.eu/consumers/odr/</a>.<br>
+                Unsere E-Mail-Adresse finden Sie oben im Impressum.<br><br>
+                <strong>Verbraucherstreitbeilegung / Universalschlichtungsstelle</strong><br>
+                Wir sind nicht bereit oder verpflichtet, an Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen.<br><br>
+                <span style="font-size: 11px; opacity: 0.7;">Quelle: e-recht24.de</span>
+            </div>
+            <button class="support-btn" onclick="closeModal('impressum-modal')">Schließen</button>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    /* Google Gemini API Key */
+    const apiKey = "AQ.Ab8RN6JnEsoxCVeVFAHzNxplxJPZwNll5ank6zb6KLIjEPTImw";
+
+    /* ElevenLabs API Einstellungen mit neuem Key & Standard Pre-made Stimmen (Free Tier erprobt) */
+    const elevenLabsApiKey = "sk_e9fed003bce3469d83a50231c70b117b197f7738b43c17d1"; 
+    const elevenLabsVoiceBoy = "21m00Tcm4TlvDq8ikWAM";  // Rachel (Default Pre-made)
+    const elevenLabsVoiceGirl = "EXAVITQu4vr4xnSDxMaL"; // Bella (Default Pre-made)
+
+    let userSettings = { gender: 'girl', language: 'de' };
+    let chatHistory = [];
+    let currentActivity = 'neutral';
+    let discoveredStages = ['neutral'];
+    let bondingProgress = 0;
+
+    /* WEB AUDIO API CONTEXT (Entsperrt iOS Safari sauber beim Klick) */
+    let audioCtx = null;
+
+    function unlockMobileAudio() {
+        if (!audioCtx) {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (audioCtx.state === 'suspended') {
+            audioCtx.resume();
+        }
+        try {
+            const dummyBuf = audioCtx.createBuffer(1, 1, 22050);
+            const dummySrc = audioCtx.createBufferSource();
+            dummySrc.buffer = dummyBuf;
+            dummySrc.connect(audioCtx.destination);
+            dummySrc.start(0);
+        } catch(e) {}
+    }
+
+    const stageMedia = {
+        boy: {
+            neutral: 'junge_neutral_video_1-1.mp4',
+            malen: 'junge_malen.jpg',
+            snack: 'junge_snack.jpg',
+            bauen: 'junge_bauen.jpg'
+        },
+        girl: {
+            neutral: 'maedchen_neutral_video_1-1.mp4',
+            malen: 'maedchen_malen.jpg',
+            snack: 'maedchen_snack.jpg',
+            bauen: 'maedchen_bauen.jpg'
+        }
+    };
+
+    const stageNames = {
+        de: { neutral: "Erstes Treffen", malen: "Maltisch", snack: "Picknick & Kakao", bauen: "Bauklötze", locked: "Noch geheim..." },
+        en: { neutral: "First Meeting", malen: "Drawing Table", snack: "Picnic & Cocoa", bauen: "Building Blocks", locked: "Secret Moment..." },
+        es: { neutral: "Primer Encuentro", malen: "Mesa de Dibujo", snack: "Merienda", bauen: "Bloques", locked: "Momento Secreto..." },
+        fr: { neutral: "Première Rencontre", malen: "Table de Dessin", snack: "Pique-nique", bauen: "Blocs", locked: "Moment Secret..." }
+    };
+
+    window.onload = () => {
+        const savedSettings = localStorage.getItem('myInnerKid_settings');
+        if (savedSettings) {
+            userSettings = JSON.parse(savedSettings);
+            if(userSettings.language) changeLanguage(userSettings.language); 
+            selectGender(userSettings.gender);
+        }
+
+        const savedDiscovered = localStorage.getItem('myInnerKid_discovered');
+        if (savedDiscovered) discoveredStages = JSON.parse(savedDiscovered);
+
+        const savedBonding = localStorage.getItem('myInnerKid_bonding');
+        if (savedBonding) {
+            bondingProgress = parseInt(savedBonding) || 0;
+            updateHeartUI(false);
+        }
+    };
+
+    function selectGender(gender) {
+        userSettings.gender = gender;
+        document.getElementById('gender-girl').classList.toggle('active', gender === 'girl');
+        document.getElementById('gender-boy').classList.toggle('active', gender === 'boy');
+    }
+
+    function changeLanguage(lang) {
+        userSettings.language = lang;
+        
+        document.getElementById('language-select-setup').value = lang;
+        document.getElementById('language-select-menu').value = lang;
+        
+        const btn = document.getElementById('start-btn-text');
+        const placeholder = document.getElementById('chat-input');
+        const labelGirl = document.getElementById('label-girl');
+        const labelBoy = document.getElementById('label-boy');
+        const setupMiniMeLabel = document.getElementById('setup-minime-label');
+        const setupLangLabel = document.getElementById('setup-lang-label');
+        const setupDisclaimer = document.getElementById('setup-disclaimer');
+        
+        const menuTitle = document.getElementById('menu-title');
+        const menuLangLabel = document.getElementById('menu-lang-label');
+        const menuRestart = document.getElementById('menu-restart');
+        const menuResetMemories = document.getElementById('menu-reset-memories');
+        const menuAlbum = document.getElementById('menu-album');
+        const menuPrivacy = document.getElementById('menu-privacy');
+        const menuImpressum = document.getElementById('menu-impressum');
+
+        const albumModalTitle = document.getElementById('album-modal-title');
+        const albumCloseBtn = document.getElementById('album-close-btn');
+
+        const headerTagline = document.getElementById('header-tagline');
+        const setupTagline = document.getElementById('setup-tagline');
+
+        if(lang === 'en') {
+            btn.innerText = "Save & Enter";
+            placeholder.placeholder = "Write to your Mini-Me...";
+            labelGirl.innerText = "Girl";
+            labelBoy.innerText = "Boy";
+            setupMiniMeLabel.innerText = "Select Mini-Me";
+            setupLangLabel.innerText = "Language";
+            
+            if(setupDisclaimer) setupDisclaimer.innerText = "myInnerKid.app is a tool for personal self-reflection and mindfulness. This application does not replace psychotherapeutic or medical treatment.";
+
+            menuTitle.innerText = "Menu";
+            menuLangLabel.innerText = "Language";
+            menuRestart.innerHTML = "🔄 Restart Mini-Me";
+            menuAlbum.innerHTML = "🖼️ My Memories";
+            menuResetMemories.innerHTML = "🗑️ Reset Memories";
+            menuPrivacy.innerHTML = "🔒 Privacy Policy";
+            menuImpressum.innerHTML = "📝 Imprint";
+
+            if(albumModalTitle) albumModalTitle.innerText = "My Memories";
+            if(albumCloseBtn) albumCloseBtn.innerText = "Close";
+
+            if(headerTagline) headerTagline.innerText = "Talk to your 5-year-old self!";
+            if(setupTagline) setupTagline.innerText = "Talk to your 5-year-old self!";
+        }
+        else if(lang === 'es') {
+            btn.innerText = "Guardar y Entrar";
+            placeholder.placeholder = "Escribe a tu mini-yo...";
+            labelGirl.innerText = "Niña";
+            labelBoy.innerText = "Niño";
+            setupMiniMeLabel.innerText = "Elige tu Mini-Yo";
+            setupLangLabel.innerText = "Idioma";
+            
+            if(setupDisclaimer) setupDisclaimer.innerText = "myInnerKid.app es una herramienta para la autorreflexión y la atención plena. La aplicación no sustituye el tratamiento psicoterapéutico o médico.";
+
+            menuTitle.innerText = "Menú";
+            menuLangLabel.innerText = "Idioma";
+            menuRestart.innerHTML = "🔄 Reiniciar Mini-Yo";
+            menuAlbum.innerHTML = "🖼️ Mis Recuerdos";
+            menuResetMemories.innerHTML = "🗑️ Restablecer Recuerdos";
+            menuPrivacy.innerHTML = "🔒 Privacidad";
+            menuImpressum.innerHTML = "📝 Aviso Legal";
+
+            if(albumModalTitle) albumModalTitle.innerText = "Mis Recuerdos";
+            if(albumCloseBtn) albumCloseBtn.innerText = "Cerrar";
+
+            if(headerTagline) headerTagline.innerText = "¡Habla con tu yo de 5 años!";
+            if(setupTagline) setupTagline.innerText = "¡Habla con tu yo de 5 años!";
+        }
+        else if(lang === 'fr') {
+            btn.innerText = "Enregistrer et Entrer";
+            placeholder.placeholder = "Écris à ton mini-moi...";
+            labelGirl.innerText = "Fille";
+            labelBoy.innerText = "Garçon";
+            setupMiniMeLabel.innerText = "Choisir Mini-Moi";
+            setupLangLabel.innerText = "Langue";
+            
+            if(setupDisclaimer) setupDisclaimer.innerText = "myInnerKid.app est un outil d'autoréflexion et de pleine conscience. L'application ne remplace pas un traitement psychothérapeutique ou médical.";
+
+            menuTitle.innerText = "Menu";
+            menuLangLabel.innerText = "Langue";
+            menuRestart.innerHTML = "🔄 Redémarrer Mini-Moi";
+            menuAlbum.innerHTML = "🖼️ Mes Souvenirs";
+            menuResetMemories.innerHTML = "🗑️ Réinitialiser Souvenirs";
+            menuPrivacy.innerHTML = "🔒 Confidentialité";
+            menuImpressum.innerHTML = "📝 Mentions légales";
+
+            if(albumModalTitle) albumModalTitle.innerText = "Mes Souvenirs";
+            if(albumCloseBtn) albumCloseBtn.innerText = "Fermer";
+
+            if(headerTagline) headerTagline.innerText = "Parle à ton toi de 5 ans !";
+            if(setupTagline) setupTagline.innerText = "Parle à ton toi de 5 ans !";
+        }
+        else {
+            btn.innerText = "Speichern & Betreten";
+            placeholder.placeholder = "Schreibe deinem Mini-Ich...";
+            labelGirl.innerText = "Mädchen";
+            labelBoy.innerText = "Junge";
+            setupMiniMeLabel.innerText = "Mini-Ich auswählen";
+            setupLangLabel.innerText = "Sprache / Language";
+            
+            if(setupDisclaimer) setupDisclaimer.innerText = "Die myInnerKid.app ist ein Tool zur persönlichen Selbstreflexion und Achtsamkeit. Die Anwendung ersetzt keine psychotherapeutische oder medizinische Behandlung.";
+
+            menuTitle.innerText = "Menü";
+            menuLangLabel.innerText = "Sprache";
+            menuRestart.innerHTML = "🔄 Mini-Ich neu starten";
+            menuAlbum.innerHTML = "🖼️ Meine Erinnerungen";
+            menuResetMemories.innerHTML = "🗑️ Erinnerungen zurücksetzen";
+            menuPrivacy.innerHTML = "🔒 Datenschutz";
+            menuImpressum.innerHTML = "📝 Impressum";
+
+            if(albumModalTitle) albumModalTitle.innerText = "Meine Erinnerungen";
+            if(albumCloseBtn) albumCloseBtn.innerText = "Schließen";
+
+            if(headerTagline) headerTagline.innerText = "Sprich mit deinem 5-jährigen Ich!";
+            if(setupTagline) setupTagline.innerText = "Sprich mit deinem 5-jährigen Ich!";
+        }
+        
+        localStorage.setItem('myInnerKid_settings', JSON.stringify(userSettings));
+    }
+
+    function startApp() {
+        unlockMobileAudio();
+        localStorage.setItem('myInnerKid_settings', JSON.stringify(userSettings));
+        
+        document.getElementById('setup-screen').style.display = 'none';
+        
+        currentActivity = 'neutral';
+        updateStageImage();
+        
+        document.getElementById('chat-area').innerHTML = '';
+        chatHistory = [];
+        
+        const greeting = getGreeting(userSettings.language);
+        addMessage('ai', greeting);
+        speakText(greeting);
+    }
+
+    function restartApp() {
+        closeModal('menu-modal');
+        document.getElementById('setup-screen').style.display = 'flex';
+    }
+
+    function resetMemories() {
+        const lang = userSettings.language || 'de';
+        let msg = "Möchtest du wirklich alle freigeschalteten Erinnerungen zurücksetzen?";
+        if(lang === 'en') msg = "Do you really want to reset all unlocked memories?";
+        if(lang === 'es') msg = "¡¿Realmente quieres restablecer todos los recuerdos desbloqueados?";
+        if(lang === 'fr') msg = "Veux-tu wirklich réinitialiser tous les souvenirs débloqués ?";
+
+        if (confirm(msg)) {
+            discoveredStages = ['neutral'];
+            bondingProgress = 0;
+            localStorage.setItem('myInnerKid_discovered', JSON.stringify(discoveredStages));
+            localStorage.setItem('myInnerKid_bonding', bondingProgress);
+            updateHeartUI(false);
+            closeModal('menu-modal');
+        }
+    }
+
+    function updateStageImage() {
+        const genderMedia = stageMedia[userSettings.gender] || stageMedia.boy;
+        const mediaSrc = genderMedia[currentActivity] || genderMedia.neutral;
+        
+        const imgElem = document.getElementById('stage-image');
+        const vidElem = document.getElementById('stage-video');
+        
+        imgElem.style.opacity = '0.2';
+        vidElem.style.opacity = '0.2';
+        
+        setTimeout(() => {
+            if (mediaSrc.endsWith('.mp4')) {
+                imgElem.style.display = 'none';
+                vidElem.style.display = 'block';
+                if (!vidElem.src.endsWith(mediaSrc)) {
+                    vidElem.src = mediaSrc;
+                }
+                vidElem.play().catch(e => console.log("Autoplay blockiert:", e));
+                vidElem.style.opacity = '1';
+            } else {
+                vidElem.style.display = 'none';
+                vidElem.pause();
+                imgElem.style.display = 'block';
+                imgElem.src = mediaSrc;
+                imgElem.style.opacity = '1';
+            }
+        }, 200);
+
+        if (!discoveredStages.includes(currentActivity)) {
+            discoveredStages.push(currentActivity);
+            localStorage.setItem('myInnerKid_discovered', JSON.stringify(discoveredStages));
+        }
+    }
+
+    function increaseBonding() {
+        if (bondingProgress < 100) {
+            bondingProgress = Math.min(100, bondingProgress + 10);
+            localStorage.setItem('myInnerKid_bonding', bondingProgress);
+            updateHeartUI(true);
+        } else {
+            updateHeartUI(true);
+        }
+    }
+
+    function updateHeartUI(shouldBeat) {
+        document.getElementById('heart-stop1').setAttribute('offset', `${bondingProgress}%`);
+        document.getElementById('heart-stop2').setAttribute('offset', `${bondingProgress}%`);
+        document.getElementById('heart-val').innerText = `${bondingProgress}%`;
+
+        if (shouldBeat) {
+            const badge = document.getElementById('heart-badge');
+            badge.classList.add('beat');
+            setTimeout(() => badge.classList.remove('beat'), 350);
+        }
+    }
+
+    function getHeartAlertText() {
+        const lang = userSettings.language || 'de';
+        if (lang === 'en') return `Your bond is at ${bondingProgress}%! Keep talking to your Mini-Me to build a deeper connection. 💕`;
+        if (lang === 'es') return `¡Tu vínculo está al ${bondingProgress}%! Sigue hablando con tu Mini-Yo para conectar aún más. 💕`;
+        if (lang === 'fr') return `Votre lien est à ${bondingProgress}% ! Continue à parler avec ton Mini-Moi. 💕`;
+        return `Eure Verbundenheit liegt bei ${bondingProgress}%! Sprich weiter mit deinem Mini-Ich, um ihm noch mehr Geborgenheit zu schenken. 💕`;
+    }
+
+    function renderAlbum() {
+        const lang = userSettings.language || 'de';
+        const names = stageNames[lang] || stageNames.de;
+        const gender = userSettings.gender || 'boy';
+        const genderMedia = stageMedia[gender] || stageMedia.boy;
+
+        const allActivities = [
+            { key: 'neutral', name: names.neutral },
+            { key: 'malen', name: names.malen },
+            { key: 'snack', name: names.snack },
+            { key: 'bauen', name: names.bauen }
+        ];
+
+        const grid = document.getElementById('album-grid');
+        grid.innerHTML = '';
+
+        let count = 0;
+
+        allActivities.forEach(act => {
+            const isUnlocked = discoveredStages.includes(act.key);
+            if(isUnlocked) count++;
+
+            const card = document.createElement('div');
+            card.className = `album-card ${isUnlocked ? '' : 'locked'}`;
+
+            const mediaSrc = genderMedia[act.key] || genderMedia.neutral;
+            const titleText = isUnlocked ? act.name : names.locked;
+
+            let mediaHtml = '';
+            if (mediaSrc.endsWith('.mp4')) {
+                mediaHtml = `<video src="${mediaSrc}" autoplay loop muted playsinline></video>`;
+            } else {
+                mediaHtml = `<img src="${mediaSrc}" alt="${titleText}">`;
+            }
+
+            card.innerHTML = `
+                ${mediaHtml}
+                ${isUnlocked ? '' : '<div class="lock-badge">🔒</div>'}
+                <div class="album-card-title">${titleText}</div>
+            `;
+            grid.appendChild(card);
+        });
+
+        const counterElem = document.getElementById('album-counter');
+        let labelText = `Momente entdeckt`;
+        if(lang === 'en') labelText = `moments discovered`;
+        if(lang === 'es') labelText = `momentos descubiertos`;
+        if(lang === 'fr') labelText = `moments découverts`;
+
+        counterElem.innerText = `${count} / ${allActivities.length} ${labelText}`;
+    }
+
+    /* --- DYNAMISCHE ROTIERENDE BEGRÜSSUNGEN --- */
+    function getGreeting(lang) {
+        const greetings = {
+            de: [
+                "Da bist du ja! Ich bin dein kleines Ich und egal, wo du jeden Tag hingehst, ich wohne immer sicher hier in deinem Herzen. Komm, ruh dich kurz bei mir aus – wie geht es dem 'großen Du' heute wirklich?",
+                "Hallo, großes Du! Ich bin dein 5-jähriges Ich und ich habe schon auf dich gewartet. Weißt du, ich hab dich richtig dolle lieb, genau so wie du bist. Wie war der Tag heute für dich?",
+                "Da bist du! Ich bin dein kleines Ich. Ich gucke immer zu dir hoch und finde es so toll, wie du alles schaffst. Lass uns kurz die Welt da draußen vergessen – wie geht es dir in deinem Herzen gerade?",
+                "Hallo! Ich bin dein 5-jähriges Ich. Auch wenn du jetzt erwachsen bist und viel Verantwortung trägst, gehören wir für immer zusammen. Leg mal kurz alle Sorgen ab – was brauchst du gerade am meisten?",
+                "Da bist du ja endlich! Ich bin dein kleines Ich. Komm, lass dich gedanklich mal kurz von mir in den Arm nehmen. Du musst jetzt für ein paar Minuten gar nicht stark sein – wie geht es dir heute?"
+            ],
+            en: [
+                "There you are! I'm your little self, and no matter where you go every day, I'm always safe here in your heart. Come, rest with me for a bit – how is the 'big you' really doing today?",
+                "Hello, big you! I'm your 5-year-old self and I've been waiting for you. You know, I love you so much, exactly the way you are. How was your day today?",
+                "There you are! I'm your little self. I always look up to you and think it's amazing how you handle everything. Let's forget the outside world for a moment – how are you feeling in your heart right now?",
+                "Hello! I'm your 5-year-old self. Even though you're grown up now and carry a lot of responsibility, we belong together forever. Put all your worries aside for a moment – what do you need most right now?",
+                "There you are at last! I'm your little self. Come, let me give you a big warm hug. You don't have to be strong at all for a few minutes – how are you doing today?"
+            ],
+            es: [
+                "¡Ahí estás! Soy tu pequeño yo y, sin importar adónde vayas cada día, siempre vivo seguro aquí en tu corazón. Ven, descansa un rato conmigo: ¿cómo está realmente el 'gran tú' hoy?",
+                "¡Hola, gran tú! Soy tu yo de 5 años y te estaba esperando. Sabes, te quiero muchísimo, tal como eres. ¿Cómo fue tu día hoy?",
+                "¡Ahí estás! Soy tu pequeño yo. Siempre te miro con admiración y me parece increíble cómo logras todo. Olvidemos el mundo exterior por un momento: ¿cómo te sientes en tu corazón en este momento?",
+                "¡Hola! Soy tu yo de 5 años. Aunque ahora eres adulto y tienes muchas responsabilidades, pertenecemos juntos para siempre. Deja a un lado todas tus preocupaciones por un momento: ¿qué es lo que más necesitas ahora?",
+                "¡Por fin estás aquí! Soy tu pequeño yo. Ven, déjame darte un abrazo con el pensamiento. No tienes que ser fuerte en absoluto durante unos minutos: ¿cómo estás hoy?"
+            ],
+            fr: [
+                "Te voilà ! Je suis ton petit toi et, peu importe où tu vas chaque jour, je vis toujours en sécurité ici dans ton cœur. Viens te reposer un instant avec moi – comment va vraiment le 'grand toi' aujourd'hui ?",
+                "Bonjour, grand toi ! Je suis ton toi de 5 ans et je t'attendais. Tu sais, je t'aime fort, exactement comme tu es. Comment s'est passée ta journée ?",
+                "Te voilà ! Je suis ton petit toi. Je te regarde toujours avec admiration et je trouve ça super la façon dont tu gères tout. Oublions un instant le monde extérieur – comment te sens-tu dans ton cœur en ce moment ?",
+                "Bonjour ! Je suis ton toi de 5 ans. Même si tu es grand maintenant et que tu as beaucoup de responsabilités, nous sommes ensemble pour toujours. Dépose toutes tes inquiétudes un instant – de quoi as-tu le plus besoin là tout de suite ?",
+                "Te voilà enfin ! Je suis ton petit toi. Viens, laisse-moi te faire une petite étreinte. Tu n'as pas du tout besoin d'être fort pendant quelques minutes – comment vas-tu aujourd'hui ?"
+            ]
+        };
+
+        const list = greetings[lang] || greetings.de;
+        const randomIndex = Math.floor(Math.random() * list.length);
+        return list[randomIndex];
+    }
+
+    /* --- ELEVENLABS SPRACHAUSGABE MIT ERWEITERTER DIAGNOSE --- */
+    async function speakText(text) {
+        if (!text) return;
+
+        const cleanText = text.replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu, '').trim();
+        if (!cleanText) return;
+
+        const apiKey = elevenLabsApiKey.trim();
+        const voiceId = (userSettings.gender === 'boy' ? elevenLabsVoiceBoy : elevenLabsVoiceGirl).trim();
+
+        if (apiKey && voiceId) {
+            try {
+                const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'xi-api-key': apiKey
+                    },
+                    body: JSON.stringify({
+                        text: cleanText,
+                        model_id: "eleven_multilingual_v2",
+                        voice_settings: {
+                            stability: 0.50,
+                            similarity_boost: 0.80
+                        }
+                    })
+                });
+
+                if (response.ok) {
+                    const arrayBuffer = await response.arrayBuffer();
+                    
+                    if (!audioCtx) {
+                        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                    }
+                    if (audioCtx.state === 'suspended') {
+                        await audioCtx.resume();
+                    }
+
+                    const decodeData = (buf) => new Promise((resolve, reject) => {
+                        audioCtx.decodeAudioData(buf, resolve, reject);
+                    });
+
+                    const audioBuffer = await decodeData(arrayBuffer);
+                    const source = audioCtx.createBufferSource();
+                    source.buffer = audioBuffer;
+                    source.connect(audioCtx.destination);
+                    source.start(0);
+                    return;
+                } else {
+                    const errData = await response.json().catch(() => ({}));
+                    const detail = errData.detail ? (errData.detail.message || JSON.stringify(errData.detail)) : response.statusText;
+                    showAudioErrorAlert(`🔊 ElevenLabs Fehler (${response.status}): ${detail}`);
+                }
+            } catch (e) {
+                showAudioErrorAlert(`🔊 Fehler: ${e.message}`);
+            }
+        }
+    }
+
+    function showAudioErrorAlert(msg) {
+        const chatArea = document.getElementById('chat-area');
+        const errDiv = document.createElement('div');
+        errDiv.style.fontSize = '11px';
+        errDiv.style.color = '#ff6b6b';
+        errDiv.style.textAlign = 'center';
+        errDiv.style.padding = '4px 8px';
+        errDiv.innerText = msg;
+        chatArea.appendChild(errDiv);
+        chatArea.scrollTop = chatArea.scrollHeight;
+    }
+
+    function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+    function openModalFromMenu(id) {
+        closeModal('menu-modal');
+        setTimeout(() => openModal(id), 100);
+    }
+
+    function addMessage(sender, text) {
+        const chatArea = document.getElementById('chat-area');
+        const msgDiv = document.createElement('div');
+        msgDiv.className = `message ${sender === 'user' ? 'msg-user' : 'msg-ai'}`;
+        
+        let labelMe = "ICH"; let labelMini = "MINI-ICH";
+        if(userSettings.language === 'en') { labelMe = "ME"; labelMini = "MINI-ME"; }
+        if(userSettings.language === 'es') { labelMe = "YO"; labelMini = "MINI-YO"; }
+        if(userSettings.language === 'fr') { labelMe = "MOI"; labelMini = "MINI-MOI"; }
+        
+        const audioIcon = sender === 'ai' ? `<button class="audio-btn" onclick="unlockMobileAudio(); speakText('${text.replace(/'/g, "\\'")}')">🔊</button>` : '';
+
+        msgDiv.innerHTML = `<div class="message-label"><span>${sender === 'user' ? labelMe : labelMini}</span>${audioIcon}</div><div>${text}</div>`;
+        chatArea.appendChild(msgDiv);
+        chatArea.scrollTop = chatArea.scrollHeight;
+    }
+
+    function handleEnter(e) { if (e.key === 'Enter') { unlockMobileAudio(); sendMessage(); } }
+
+    function detectStageFromKeywords(text) {
+        const lower = text.toLowerCase();
+        if (lower.includes('malen') || lower.includes('stift') || lower.includes('zeichnen') || lower.includes('schloss') || lower.includes('blatt') || lower.includes('draw') || lower.includes('pintar') || lower.includes('dessiner')) {
+            return 'malen';
+        }
+        if (lower.includes('kakao') || lower.includes('keks') || lower.includes('picknick') || lower.includes('essen') || lower.includes('trinken') || lower.includes('snack') || lower.includes('eat') || lower.includes('cocoa')) {
+            return 'snack';
+        }
+        if (lower.includes('bauklötz') || lower.includes('turm') || lower.includes('bauen') || lower.includes('lego') || lower.includes('block') || lower.includes('build')) {
+            return 'bauen';
+        }
+        return null;
+    }
+
+    async function sendMessage() {
+        unlockMobileAudio();
+
+        const input = document.getElementById('chat-input');
+        const text = input.value.trim();
+        if (!text) return;
+
+        const cleanKey = apiKey.trim();
+
+        addMessage('user', text);
+        input.value = '';
+
+        chatHistory.push({ role: 'user', parts: [{ text: text }] });
+
+        const chatArea = document.getElementById('chat-area');
+        const typingDiv = document.createElement('div');
+        typingDiv.className = 'message msg-ai';
+        typingDiv.id = 'typing-indicator';
+        typingDiv.innerText = '...';
+        chatArea.appendChild(typingDiv);
+        chatArea.scrollTop = chatArea.scrollHeight;
+
+        let langInstruction = "Antworte auf Deutsch.";
+        if(userSettings.language === 'en') langInstruction = "Answer in English.";
+        if(userSettings.language === 'es') langInstruction = "Responde en Español.";
+        if(userSettings.language === 'fr') langInstruction = "Réponds en Français.";
+
+        const systemPrompt = `Du bist das 5-jährige innere Kind des Nutzers. Du bist ein kleines 5-jähriges ${userSettings.gender === 'girl' ? 'Mädchen' : 'Junge'}. Sprich sehr warm, emotional, liebevoll, vertraut und kindlich ehrlich (max. 2 Sätze). WICHTIG: Variiere deine Worte und wiederhole NIEMALS Fragen oder Floskeln, die du im Gesprächsverlauf bereits gesagt hast. Reagiere direkt und natürlich auf die Antworten des Nutzers. ${langInstruction}
+
+SICHERHEITSHINWEIS & SCHUTZSCHILD: Du führst ausschließlich liebevolle, kindgerechte und konstruktive Gespräche über Erinnerungen, Geborgenheit, Achtsamkeit und Gefühle der Selbsterkenntnis. Sollte der Nutzer unangebrachte, anstößige, grenzüberschreitende oder schädliche Themen ansprechen, verlasse sofort deine Rolle und antworte kurz und neutral: "Über solche Themen möchte ich nicht sprechen."
+
+SZENEN-STEUERUNG: Wenn das Gespräch zu einer der folgenden Szenen passt oder dahin wechselt, hänge am allerletzten Ende deiner Nachricht UNBEDINGT genau einen dieser Tags an:
+- [STAGE:malen] (wenn ihr malt, zeichnet, Stifte nutzt oder bastelt)
+- [STAGE:snack] (wenn ihr Kekse esst, Kakao trinkt, Picknick macht, Trost sucht oder Pause macht)
+- [STAGE:bauen] (wenn ihr mit Bauklötzen, Lego oder Türmen spielt)
+- [STAGE:neutral] (wenn ihr im Stehen sprecht oder keine spezielle Aktivität stattfindet)`;
+
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${cleanKey}`;
+        
+        const payload = {
+            system_instruction: { parts: [{ text: systemPrompt }] },
+            contents: chatHistory
+        };
+
+        let data;
+        let attempts = 0;
+        const maxAttempts = 3;
+
+        while (attempts < maxAttempts) {
+            attempts++;
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                data = await response.json();
+                
+                if (data.error && data.error.message && data.error.message.includes('high demand')) {
+                    if (attempts < maxAttempts) {
+                        await new Promise(r => setTimeout(r, 2000));
+                        continue; 
+                    }
+                }
+                break;
+                
+            } catch (e) {
+                if (attempts === maxAttempts) {
+                    data = { error: { message: "Network Error" } };
+                    break;
+                }
+                await new Promise(r => setTimeout(r, 2000));
+            }
+        }
+        
+        const indicator = document.getElementById('typing-indicator');
+        if(indicator) indicator.remove();
+
+        if (data && data.candidates && data.candidates.length > 0 && data.candidates[0].content) {
+            let aiResponse = data.candidates[0].content.parts[0].text;
+            
+            let detectedStage = null;
+            const stageMatch = aiResponse.match(/\[STAGE:\s*([a-zA-Z0-9_]+)\s*\]/i);
+            if (stageMatch) {
+                detectedStage = stageMatch[1].toLowerCase();
+            }
+
+            aiResponse = aiResponse.replace(/\[STAGE:\s*[a-zA-Z0-9_]+\s*\]/gi, '').trim();
+
+            if (!detectedStage) {
+                detectedStage = detectStageFromKeywords(aiResponse) || detectStageFromKeywords(text);
+            }
+
+            if (detectedStage && ['neutral', 'malen', 'snack', 'bauen'].includes(detectedStage)) {
+                if (detectedStage !== currentActivity) {
+                    currentActivity = detectedStage;
+                    updateStageImage();
+                }
+            }
+
+            addMessage('ai', aiResponse);
+            chatHistory.push({ role: 'model', parts: [{ text: aiResponse }] });
+            
+            increaseBonding();
+            speakText(aiResponse);
+
+        } else if (data && data.error) {
+            chatHistory.pop();
+            
+            if (data.error.message.includes('high demand')) {
+                let busyMsg = "Puh, ich hab gerade sooo viele Gedanken im Kopf! 🙈 Gib mir bitte ganz kurz Zeit und frag mich gleich nochmal.";
+                if(userSettings.language === 'en') busyMsg = "Phew, I have sooo many thoughts in my head right now! 🙈 Give me a sec and ask me again in a moment.";
+                if(userSettings.language === 'es') busyMsg = "Uf, ¡tengo muuuuchos pensamientos en mi cabeza authorized de nuevo!";
+                if(userSettings.language === 'fr') busyMsg = "Ouf, j'ai teeeellement de pensées dans ma tête en ce moment ! 🙈 Laisse-moi une seconde et redemande-moi dans un instant.";
+                addMessage('ai', busyMsg);
+                speakText(busyMsg);
+            } else {
+                addMessage('ai', `System-Fehler: ${data.error.message}`);
+            }
+        } else {
+            chatHistory.pop();
+            addMessage('ai', 'Ups, ich habe eine leere Antwort bekommen.');
+        }
+    }
+</script>
+</body>
+</html>
