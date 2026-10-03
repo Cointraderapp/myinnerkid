@@ -482,9 +482,6 @@
 </div>
 
 <script>
-    /* Google Gemini API Key */
-    const apiKey = "AQ.Ab8RN6JnEsoxCVeVFAHzNxplxJPZwNll5ank6zb6KLIjEPTImw";
-
     let userSettings = { gender: 'girl', language: 'de' };
     let chatHistory = [];
     let currentActivity = 'neutral';
@@ -788,8 +785,8 @@
             menuLangLabel.innerText = "Sprache";
             if(menuFaq) menuFaq.innerHTML = "💡 App-Idee & FAQ";
             menuRestart.innerHTML = "🔄 Mini-Ich neu starten";
-            menuAlbum.innerHTML = "🖼️ Meine Erinnerungen";
-            menuResetMemories.innerHTML = "🗑️️ Erinnerungen zurücksetzen";
+            menuAlbum.innerHTML = "🖼️️ Meine Erinnerungen";
+            menuResetMemories.innerHTML = "🗑️ Erinnerungen zurücksetzen";
             menuPrivacy.innerHTML = "🔒 Datenschutz";
             menuImpressum.innerHTML = "📝 Impressum";
 
@@ -1086,8 +1083,6 @@
         const text = input.value.trim();
         if (!text) return;
 
-        const cleanKey = apiKey.trim();
-
         addMessage('user', text);
         input.value = '';
 
@@ -1116,7 +1111,8 @@ SZENEN-STEUERUNG: Wenn das Gespräch zu einer der folgenden Szenen passt oder da
 - [STAGE:bauen] (wenn ihr mit Bauklötzen, Lego oder Türmen spielt)
 - [STAGE:neutral] (wenn ihr im Stehen sprecht oder keine spezielle Aktivität stattfindet)`;
 
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${cleanKey}`;
+        // Aufruf des sicheren Serverless-Endpunkts /api/chat
+        const url = '/api/chat';
         
         const payload = {
             system_instruction: { parts: [{ text: systemPrompt }] },
@@ -1189,7 +1185,7 @@ SZENEN-STEUERUNG: Wenn das Gespräch zu einer der folgenden Szenen passt oder da
         } else if (data && data.error) {
             chatHistory.pop();
             
-            if (data.error.message.includes('high demand')) {
+            if (data.error.message && data.error.message.includes('high demand')) {
                 let busyMsg = "Puh, ich hab gerade sooo viele Gedanken im Kopf! 🙈 Gib mir bitte ganz kurz Zeit und frag mich gleich nochmal.";
                 if(userSettings.language === 'en') busyMsg = "Phew, I have sooo many thoughts in my head right now! 🙈 Give me a sec and ask me again in a moment.";
                 if(userSettings.language === 'es') busyMsg = "Uf, ¡tengo muuuuchos pensamientos en mi cabeza authorized de nuevo!";
@@ -1197,7 +1193,7 @@ SZENEN-STEUERUNG: Wenn das Gespräch zu einer der folgenden Szenen passt oder da
                 addMessage('ai', busyMsg);
                 speakText(busyMsg);
             } else {
-                addMessage('ai', `System-Fehler: ${data.error.message}`);
+                addMessage('ai', `System-Fehler: ${data.error.message || 'Unbekannter Fehler'}`);
             }
         } else {
             chatHistory.pop();
