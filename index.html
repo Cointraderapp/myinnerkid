@@ -342,7 +342,7 @@
 
                 <strong style="color: var(--text-light); font-size: 14px;">Häufige Fragen (FAQ)</strong><br><br>
                 • <strong>Wie entstehen die Antworten?</strong><br>
-                Die Antworten werden mithilfe künstlicher Intelligenz (Google Gemini) generiert und sind speziell darauf programmed, stets fürsorglich, warmherzig und kindgerecht zu antworten.<br><br>
+                Die Antworten werden mithilfe künstlicher Intelligenz (Google Gemini) generiert und sind speziell darauf programmiert, stets fürsorglich, warmherzig und kindgerecht zu antworten.<br><br>
                 • <strong>Werden meine Nachrichten gespeichert?</strong><br>
                 Nein. Deine Chats und Einstellungen verbleiben ausschließlich lokal auf deinem Gerät in deinem Browser-Speicher.<br><br>
 
@@ -426,7 +426,7 @@
     let discoveredStages = ['neutral'];
     let bondingProgress = 0;
 
-    /* Web Speech Synth Initialisierung für iOS/Android */
+    /* Web Speech Synth Initialisierung */
     let availableVoices = [];
     function loadVoices() {
         if ('speechSynthesis' in window) {
@@ -555,7 +555,7 @@
             if(menuFaq) menuFaq.innerHTML = "💡 App Idea & FAQ";
             menuRestart.innerHTML = "🔄 Restart Mini-Me";
             menuAlbum.innerHTML = "🖼️ My Memories";
-            menuResetMemories.innerHTML = "🗑️ Reset Memories";
+            menuResetMemories.innerHTML = "🗑️️ Reset Memories";
             menuPrivacy.innerHTML = "🔒 Privacy Policy";
             menuImpressum.innerHTML = "📝 Imprint";
 
@@ -849,11 +849,11 @@
         return list[randomIndex];
     }
 
-    /* --- OPTIMIERTE NATÜRLICHE SPRACHAUSGABE MIT FORMANTSIMULATION --- */
+    /* --- BEVORZUGUNG VON PREMIUM- UND HD-SYSTEMSTIMMEN --- */
     function speakText(text) {
         if (!text || !('speechSynthesis' in window)) return;
 
-        window.speechSynthesis.cancel(); // Vorherige Sprachausgabe stoppen
+        window.speechSynthesis.cancel();
 
         const cleanText = text.replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu, '').trim();
         if (!cleanText) return;
@@ -863,22 +863,17 @@
         const langMap = { de: 'de-DE', en: 'en-US', es: 'es-ES', fr: 'fr-FR' };
         utterance.lang = langMap[userSettings.language] || 'de-DE';
 
-        /* SANFTE & HARMONISCHE ANPASSUNG DER RE RESONANZQUOTEN */
-        if (userSettings.gender === 'boy') {
-            utterance.pitch = 1.18; // Natürlich angehobene Frequenz für Jungen
-            utterance.rate = 0.96;  // Entspanntes Vorlesetempo
-        } else {
-            utterance.pitch = 1.28; // Sanfte, warm-weibliche Tonlage für Mädchen
-            utterance.rate = 0.98;
-        }
+        // Reine Grundtonlage wählen, um künstliches Verzerrungs-Blechen zu vermeiden
+        utterance.pitch = 1.05; 
+        utterance.rate = 0.98;
 
-        // Hochwertige Systemstimmen (Siri, Google HD, Natural) bevorzugen
         const voices = availableVoices.length ? availableVoices : window.speechSynthesis.getVoices();
         const currentLangPrefix = utterance.lang.split('-')[0];
         
+        // Suche gezielt nach HD-, Premium- und Online-Cloudstimmen des Betriebssystems
         const preferredVoice = voices.find(v => 
             v.lang.startsWith(currentLangPrefix) && 
-            (v.name.includes('Natural') || v.name.includes('Siri') || v.name.includes('Google') || v.name.includes('Anna') || v.name.includes('Helena') || v.name.includes('Monica'))
+            (v.name.includes('Enhanced') || v.name.includes('Premium') || v.name.includes('Natural') || v.name.includes('Google') || v.name.includes('Microsoft') || v.name.includes('Siri'))
         ) || voices.find(v => v.lang.startsWith(currentLangPrefix));
 
         if (preferredVoice) {
