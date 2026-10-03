@@ -72,10 +72,13 @@
         .v5-sub { font-size: 11px; color: #ccc; font-style: italic; margin-top: 2px; }
         .v5-domain { font-size: 9.5px; color: var(--text-dim); margin-top: 3px; letter-spacing: 0.8px; }
 
-        .menu-btn {
+        .header-btn {
             background: none; border: none; color: var(--text-dim);
-            font-size: 30px; line-height: 1; cursor: pointer; padding: 2px 5px;
+            font-size: 24px; line-height: 1; cursor: pointer; padding: 2px 5px;
+            transition: transform 0.2s, opacity 0.2s;
         }
+        .header-btn:active { transform: scale(0.9); }
+        .audio-btn-off { opacity: 0.5; }
 
         /* --- Setup Screen --- */
         #setup-screen {
@@ -197,13 +200,13 @@
 <div id="app-container">
 
     <header class="app-header">
-        <div style="width: 30px;"></div> 
+        <button class="header-btn audio-btn-off" id="audio-toggle-btn" onclick="toggleAudioMute()" title="Sprachausgabe aktivieren">🔇</button> 
         <div class="brand-logo">
             <div class="v5-title title-text">Mein inneres Kind</div>
             <div class="v5-sub sub-text">Sprich mit deinem 5-jährigen Ich!</div>
             <div class="v5-domain">myInnerKid.app</div>
         </div>
-        <button class="menu-btn" onclick="openModal('menu-modal')">☰</button>
+        <button class="header-btn" onclick="openModal('menu-modal')" style="font-size: 30px;">☰</button>
     </header>
 
     <!-- Setup Screen -->
@@ -426,6 +429,25 @@
     let discoveredStages = ['neutral'];
     let bondingProgress = 0;
 
+    /* AUDIO STUMMSCHALTUNG: Standardmäßig stumm (true) */
+    let isAudioMuted = true;
+
+    function toggleAudioMute() {
+        isAudioMuted = !isAudioMuted;
+        const btn = document.getElementById('audio-toggle-btn');
+        if (isAudioMuted) {
+            btn.innerText = '🔇';
+            btn.classList.add('audio-btn-off');
+            btn.title = "Sprachausgabe aktivieren";
+            if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+        } else {
+            btn.innerText = '🔊';
+            btn.classList.remove('audio-btn-off');
+            btn.title = "Sprachausgabe stummschalten";
+            unlockMobileAudio();
+        }
+    }
+
     /* Web Speech Synth Initialisierung */
     let availableVoices = [];
     function loadVoices() {
@@ -555,7 +577,7 @@
             if(menuFaq) menuFaq.innerHTML = "💡 App Idea & FAQ";
             menuRestart.innerHTML = "🔄 Restart Mini-Me";
             menuAlbum.innerHTML = "🖼️ My Memories";
-            menuResetMemories.innerHTML = "🗑️️ Reset Memories";
+            menuResetMemories.innerHTML = "🗑 Reset Memories";
             menuPrivacy.innerHTML = "🔒 Privacy Policy";
             menuImpressum.innerHTML = "📝 Imprint";
 
@@ -849,9 +871,9 @@
         return list[randomIndex];
     }
 
-    /* --- BEVORZUGUNG VON PREMIUM- UND HD-SYSTEMSTIMMEN --- */
+    /* --- BEVORZUGUNG VON BEWÄHRTEN KINDLICHEN PITCH-EINSTELLUNGEN --- */
     function speakText(text) {
-        if (!text || !('speechSynthesis' in window)) return;
+        if (isAudioMuted || !text || !('speechSynthesis' in window)) return;
 
         window.speechSynthesis.cancel();
 
@@ -863,17 +885,21 @@
         const langMap = { de: 'de-DE', en: 'en-US', es: 'es-ES', fr: 'fr-FR' };
         utterance.lang = langMap[userSettings.language] || 'de-DE';
 
-        // Reine Grundtonlage wählen, um künstliches Verzerrungs-Blechen zu vermeiden
-        utterance.pitch = 1.05; 
-        utterance.rate = 0.98;
+        /* WIEDERHERGESTELLTE KINDLICHE PARACETAMER FÜR DIE SCHÖNE PC-STIMME */
+        if (userSettings.gender === 'boy') {
+            utterance.pitch = 1.18; // Ausgewogene Erhöhung für Jungen
+            utterance.rate = 0.96;
+        } else {
+            utterance.pitch = 1.28; // Sanfte Erhöhung für Mädchen
+            utterance.rate = 0.98;
+        }
 
         const voices = availableVoices.length ? availableVoices : window.speechSynthesis.getVoices();
         const currentLangPrefix = utterance.lang.split('-')[0];
         
-        // Suche gezielt nach HD-, Premium- und Online-Cloudstimmen des Betriebssystems
         const preferredVoice = voices.find(v => 
             v.lang.startsWith(currentLangPrefix) && 
-            (v.name.includes('Enhanced') || v.name.includes('Premium') || v.name.includes('Natural') || v.name.includes('Google') || v.name.includes('Microsoft') || v.name.includes('Siri'))
+            (v.name.includes('Natural') || v.name.includes('Siri') || v.name.includes('Google') || v.name.includes('Anna') || v.name.includes('Helena') || v.name.includes('Monica'))
         ) || voices.find(v => v.lang.startsWith(currentLangPrefix));
 
         if (preferredVoice) {
