@@ -427,10 +427,10 @@
     /* Google Gemini API Key */
     const apiKey = "AQ.Ab8RN6JnEsoxCVeVFAHzNxplxJPZwNll5ank6zb6KLIjEPTImw";
 
-    /* ElevenLabs API Einstellungen mit neuem Key & Standard Pre-made Stimmen (Free Tier erprobt) */
+    /* ElevenLabs API Einstellungen mit voll kompatiblen Free-Tier Standardstimmen */
     const elevenLabsApiKey = "sk_e9fed003bce3469d83a50231c70b117b197f7738b43c17d1"; 
-    const elevenLabsVoiceBoy = "21m00Tcm4TlvDq8ikWAM";  // Rachel (Default Pre-made)
-    const elevenLabsVoiceGirl = "EXAVITQu4vr4xnSDxMaL"; // Bella (Default Pre-made)
+    const elevenLabsVoiceBoy = "pNInz6obpgDQGcFmaJgB";  // Adam (Standard Premade)
+    const elevenLabsVoiceGirl = "EXAVITQu4vr4xnSDxMaL"; // Bella (Standard Premade)
 
     let userSettings = { gender: 'girl', language: 'de' };
     let chatHistory = [];
@@ -824,7 +824,7 @@
         return list[randomIndex];
     }
 
-    /* --- ELEVENLABS SPRACHAUSGABE MIT ERWEITERTER DIAGNOSE --- */
+    /* --- ELEVENLABS SPRACHAUSGABE --- */
     async function speakText(text) {
         if (!text) return;
 
