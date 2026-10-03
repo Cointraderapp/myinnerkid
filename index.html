@@ -838,7 +838,7 @@
             fr: [
                 "Te voilà ! Je suis ton petit toi et, peu importe où tu vas chaque jour, je vis toujours en sécurité ici dans ton cœur. Viens te reposer un instant avec moi – comment va vraiment le 'grand toi' aujourd'hui ?",
                 "Bonjour, grand toi ! Je suis ton toi de 5 ans et je t'attendais. Tu sais, je t'aime fort, exactement comme tu es. Comment s'est passée ta journée ?",
-                "Te voilà ! Je suis ton petit toi. Je te regarde toujours avec admiration et je trouve ça super la façon dont tu gères tout. Oublions un instant le monde exterior – comment te sens-tu dans ton cœur en ce moment ?",
+                "Te voilà ! Je suis ton petit toi. Je te regarde toujours avec admiration et je trouve ça super la façon dont tu gères tout. Oublions un instant le monde extérieur – comment te sens-tu dans ton cœur en ce moment ?",
                 "Bonjour ! Je suis ton toi de 5 ans. Même si tu es grand maintenant et que tu as beaucoup de responsabilités, nous sommes ensemble pour toujours. Dépose toutes tes inquiétudes un instant – de quoi as-tu le plus besoin là tout de suite ?",
                 "Te voilà enfin ! Je suis ton petit toi. Viens, laisse-moi te faire une petite étreinte. Tu n'as pas du tout besoin d'être fort pendant quelques minutes – comment vas-tu aujourd'hui ?"
             ]
@@ -849,11 +849,11 @@
         return list[randomIndex];
     }
 
-    /* --- UNBEGRENZTE & KOSTENLOSE NATIVE SPRACHAUSGABE (Web Speech API) --- */
+    /* --- OPTIMIERTE NATÜRLICHE SPRACHAUSGABE FÜR SMARTPHONES --- */
     function speakText(text) {
         if (!text || !('speechSynthesis' in window)) return;
 
-        window.speechSynthesis.cancel(); // Vorherige Sprachausgabe stoppen
+        window.speechSynthesis.cancel(); // Vorherige Sprache abbrechen
 
         const cleanText = text.replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu, '').trim();
         if (!cleanText) return;
@@ -863,22 +863,22 @@
         const langMap = { de: 'de-DE', en: 'en-US', es: 'es-ES', fr: 'fr-FR' };
         utterance.lang = langMap[userSettings.language] || 'de-DE';
 
-        /* KINDLICHER PITCH & SPEED DURCH NATIVE SYSTE-AUDIO-STEUERUNG */
+        /* SANFTE & NATÜRLICHE TONLAGE (KEINE DIGITALE VERZERRUNG AUF DEM HANDY) */
         if (userSettings.gender === 'boy') {
-            utterance.pitch = 1.35; // Höhere Tonlage
-            utterance.rate = 1.05;  // Leicht flotter
+            utterance.pitch = 1.10; // Dezent höher, warm & klar
+            utterance.rate = 0.98;  // Ruhiges Vorlesetempo
         } else {
-            utterance.pitch = 1.45; // Weiblich/Kindlich angehobener Pitch
-            utterance.rate = 1.05;
+            utterance.pitch = 1.15; // Leicht weiblich/kindlich angehoben
+            utterance.rate = 0.98;
         }
 
-        // Passende natürliche Sprache aus den Gerätestimmen wählen
+        // Hochwertige Systemstimme (z.B. Siri / Google HD) wählen
         const voices = availableVoices.length ? availableVoices : window.speechSynthesis.getVoices();
         const currentLangPrefix = utterance.lang.split('-')[0];
         
         const preferredVoice = voices.find(v => 
             v.lang.startsWith(currentLangPrefix) && 
-            (v.name.includes('Google') || v.name.includes('Siri') || v.name.includes('Natural') || v.name.includes('Anna') || v.name.includes('Helena') || v.name.includes('Samantha'))
+            (v.name.includes('Siri') || v.name.includes('Google') || v.name.includes('Natural') || v.name.includes('Anna') || v.name.includes('Helena'))
         );
 
         if (preferredVoice) {
