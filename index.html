@@ -420,33 +420,28 @@
     /* Google Gemini API Key */
     const apiKey = "AQ.Ab8RN6JnEsoxCVeVFAHzNxplxJPZwNll5ank6zb6KLIjEPTImw";
 
-    /* ElevenLabs API Einstellungen - Voll kompatible Free-Tier Standardstimmen */
-    const elevenLabsApiKey = "sk_e9fed003bce3469d83a50231c70b117b197f7738b43c17d1"; 
-    const elevenLabsVoiceBoy = "pNInz6obpgDQGcFmaJgB";  // Adam (Standard Premade - Free Tier)
-    const elevenLabsVoiceGirl = "EXAVITQu4vr4xnSDxMaL"; // Bella (Standard Premade - Free Tier)
-
     let userSettings = { gender: 'girl', language: 'de' };
     let chatHistory = [];
     let currentActivity = 'neutral';
     let discoveredStages = ['neutral'];
     let bondingProgress = 0;
 
-    let audioCtx = null;
+    /* Web Speech Synth Initialisierung für iOS/Android */
+    let availableVoices = [];
+    function loadVoices() {
+        if ('speechSynthesis' in window) {
+            availableVoices = window.speechSynthesis.getVoices();
+        }
+    }
+    if ('speechSynthesis' in window) {
+        window.speechSynthesis.onvoiceschanged = loadVoices;
+        loadVoices();
+    }
 
     function unlockMobileAudio() {
-        if (!audioCtx) {
-            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.resume();
         }
-        if (audioCtx.state === 'suspended') {
-            audioCtx.resume();
-        }
-        try {
-            const dummyBuf = audioCtx.createBuffer(1, 1, 22050);
-            const dummySrc = audioCtx.createBufferSource();
-            dummySrc.buffer = dummyBuf;
-            dummySrc.connect(audioCtx.destination);
-            dummySrc.start(0);
-        } catch(e) {}
     }
 
     const stageMedia = {
@@ -560,7 +555,7 @@
             if(menuFaq) menuFaq.innerHTML = "💡 App Idea & FAQ";
             menuRestart.innerHTML = "🔄 Restart Mini-Me";
             menuAlbum.innerHTML = "🖼️ My Memories";
-            menuResetMemories.innerHTML = "🗑️ Reset Memories";
+            menuResetMemories.innerHTML = "🗑️️ Reset Memories";
             menuPrivacy.innerHTML = "🔒 Privacy Policy";
             menuImpressum.innerHTML = "📝 Imprint";
 
@@ -647,7 +642,7 @@
             if(menuFaq) menuFaq.innerHTML = "💡 App-Idee & FAQ";
             menuRestart.innerHTML = "🔄 Mini-Ich neu starten";
             menuAlbum.innerHTML = "🖼️ Meine Erinnerungen";
-            menuResetMemories.innerHTML = "🗑️️ Erinnerungen zurücksetzen";
+            menuResetMemories.innerHTML = "🗑️ Erinnerungen zurücksetzen";
             menuPrivacy.innerHTML = "🔒 Datenschutz";
             menuImpressum.innerHTML = "📝 Impressum";
 
@@ -843,7 +838,7 @@
             fr: [
                 "Te voilà ! Je suis ton petit toi et, peu importe où tu vas chaque jour, je vis toujours en sécurité ici dans ton cœur. Viens te reposer un instant avec moi – comment va vraiment le 'grand toi' aujourd'hui ?",
                 "Bonjour, grand toi ! Je suis ton toi de 5 ans et je t'attendais. Tu sais, je t'aime fort, exactement comme tu es. Comment s'est passée ta journée ?",
-                "Te voilà ! Je suis ton petit toi. Je te regarde toujours avec admiration et je trouve ça super la façon dont tu gères tout. Oublions un instant le monde extérieur – comment te sens-tu dans ton cœur en ce moment ?",
+                "Te voilà ! Je suis ton petit toi. Je te regarde toujours avec admiration et je trouve ça super la façon dont tu gères tout. Oublions un instant le monde exterior – comment te sens-tu dans ton cœur en ce moment ?",
                 "Bonjour ! Je suis ton toi de 5 ans. Même si tu es grand maintenant et que tu as beaucoup de responsabilités, nous sommes ensemble pour toujours. Dépose toutes tes inquiétudes un instant – de quoi as-tu le plus besoin là tout de suite ?",
                 "Te voilà enfin ! Je suis ton petit toi. Viens, laisse-moi te faire une petite étreinte. Tu n'as pas du tout besoin d'être fort pendant quelques minutes – comment vas-tu aujourd'hui ?"
             ]
@@ -854,85 +849,43 @@
         return list[randomIndex];
     }
 
-    /* --- ELEVENLABS SPRACHAUSGABE MIT KINDLICHER PITCH-MODULATION --- */
-    async function speakText(text) {
-        if (!text) return;
+    /* --- UNBEGRENZTE & KOSTENLOSE NATIVE SPRACHAUSGABE (Web Speech API) --- */
+    function speakText(text) {
+        if (!text || !('speechSynthesis' in window)) return;
+
+        window.speechSynthesis.cancel(); // Vorherige Sprachausgabe stoppen
 
         const cleanText = text.replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu, '').trim();
         if (!cleanText) return;
 
-        const apiKey = elevenLabsApiKey.trim();
-        const voiceId = (userSettings.gender === 'boy' ? elevenLabsVoiceBoy : elevenLabsVoiceGirl).trim();
+        const utterance = new SpeechSynthesisUtterance(cleanText);
 
-        if (apiKey && voiceId) {
-            try {
-                const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'xi-api-key': apiKey
-                    },
-                    body: JSON.stringify({
-                        text: cleanText,
-                        model_id: "eleven_multilingual_v2",
-                        voice_settings: {
-                            stability: 0.45,
-                            similarity_boost: 0.85
-                        }
-                    })
-                });
+        const langMap = { de: 'de-DE', en: 'en-US', es: 'es-ES', fr: 'fr-FR' };
+        utterance.lang = langMap[userSettings.language] || 'de-DE';
 
-                if (response.ok) {
-                    const arrayBuffer = await response.arrayBuffer();
-                    
-                    if (!audioCtx) {
-                        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                    }
-                    if (audioCtx.state === 'suspended') {
-                        await audioCtx.resume();
-                    }
-
-                    const decodeData = (buf) => new Promise((resolve, reject) => {
-                        audioCtx.decodeAudioData(buf, resolve, reject);
-                    });
-
-                    const audioBuffer = await decodeData(arrayBuffer);
-                    const source = audioCtx.createBufferSource();
-                    source.buffer = audioBuffer;
-
-                    /* KINDLICHER PITCH- & SPEED-EFFEKT (Web Audio API) */
-                    if (userSettings.gender === 'boy') {
-                        source.detune.value = 380;       // +3.8 Halbtonschritte höher
-                        source.playbackRate.value = 1.12; // 12% schneller
-                    } else {
-                        source.detune.value = 340;       // +3.4 Halbtonschritte höher
-                        source.playbackRate.value = 1.10; // 10% schneller
-                    }
-
-                    source.connect(audioCtx.destination);
-                    source.start(0);
-                    return;
-                } else {
-                    const errData = await response.json().catch(() => ({}));
-                    const detail = errData.detail ? (errData.detail.message || JSON.stringify(errData.detail)) : response.statusText;
-                    showAudioErrorAlert(`🔊 ElevenLabs Fehler (${response.status}): ${detail}`);
-                }
-            } catch (e) {
-                showAudioErrorAlert(`🔊 Fehler: ${e.message}`);
-            }
+        /* KINDLICHER PITCH & SPEED DURCH NATIVE SYSTE-AUDIO-STEUERUNG */
+        if (userSettings.gender === 'boy') {
+            utterance.pitch = 1.35; // Höhere Tonlage
+            utterance.rate = 1.05;  // Leicht flotter
+        } else {
+            utterance.pitch = 1.45; // Weiblich/Kindlich angehobener Pitch
+            utterance.rate = 1.05;
         }
-    }
 
-    function showAudioErrorAlert(msg) {
-        const chatArea = document.getElementById('chat-area');
-        const errDiv = document.createElement('div');
-        errDiv.style.fontSize = '11px';
-        errDiv.style.color = '#ff6b6b';
-        errDiv.style.textAlign = 'center';
-        errDiv.style.padding = '4px 8px';
-        errDiv.innerText = msg;
-        chatArea.appendChild(errDiv);
-        chatArea.scrollTop = chatArea.scrollHeight;
+        // Passende natürliche Sprache aus den Gerätestimmen wählen
+        const voices = availableVoices.length ? availableVoices : window.speechSynthesis.getVoices();
+        const currentLangPrefix = utterance.lang.split('-')[0];
+        
+        const preferredVoice = voices.find(v => 
+            v.lang.startsWith(currentLangPrefix) && 
+            (v.name.includes('Google') || v.name.includes('Siri') || v.name.includes('Natural') || v.name.includes('Anna') || v.name.includes('Helena') || v.name.includes('Samantha'))
+        );
+
+        if (preferredVoice) {
+            utterance.voice = preferredVoice;
+        }
+
+        window.speechSynthesis.speak(utterance);
     }
 
     function openModal(id) { document.getElementById(id).style.display = 'flex'; }
@@ -1004,7 +957,7 @@
 
         const systemPrompt = `Du bist das 5-jährige innere Kind des Nutzers. Du bist ein kleines 5-jähriges ${userSettings.gender === 'girl' ? 'Mädchen' : 'Junge'}. Sprich sehr warm, emotional, liebevoll, vertraut und kindlich ehrlich (max. 2 Sätze). WICHTIG: Variiere deine Worte und wiederhole NIEMALS Fragen oder Floskeln, die du im Gesprächsverlauf bereits gesagt hast. Reagiere direkt und natürlich auf die Antworten des Nutzers. ${langInstruction}
 
-SICHERHEITSHINWEIS & SCHUTZSCHILD: Du führst ausschließlich liebevolle, kindgerechte und konstruktive Gespräche über Erinnerungen, Geborgenheit, Achtsamkeit und Gefühle der Selbsterkenntnis. Sollte der Nutzer unangebrachte, anstößige, grenzüberschreitende oder schädliche Themen ansprechen, verlasse sofort deine Rolle und antworte kurz und neutral: "Über solche Themen möchte ich not sprechen."
+SICHERHEITSHINWEIS & SCHUTZSCHILD: Du führst ausschließlich liebevolle, kindgerechte und konstruktive Gespräche über Erinnerungen, Geborgenheit, Achtsamkeit und Gefühle der Selbsterkenntnis. Sollte der Nutzer unangebrachte, anstößige, grenzüberschreitende oder schädliche Themen ansprechen, verlasse sofort deine Rolle und antworte kurz und neutral: "Über solche Themen möchte ich nicht sprechen."
 
 SZENEN-STEUERUNG: Wenn das Gespräch zu einer der folgenden Szenen passt oder dahin wechselt, hänge am allerletzten Ende deiner Nachricht UNBEDINGT genau einen dieser Tags an:
 - [STAGE:malen] (wenn ihr malt, zeichnet, Stifte nutzt oder bastelt)
