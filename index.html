@@ -73,12 +73,13 @@
         .v5-domain { font-size: 9.5px; color: var(--text-dim); margin-top: 3px; letter-spacing: 0.8px; }
 
         .header-btn {
-            background: none; border: none; color: var(--text-dim);
-            font-size: 24px; line-height: 1; cursor: pointer; padding: 2px 5px;
+            background: none; border: none; color: var(--text-light);
+            font-size: 24px; line-height: 1; cursor: pointer; padding: 4px;
+            display: flex; align-items: center; justify-content: center;
             transition: transform 0.2s, opacity 0.2s;
         }
-        .header-btn:active { transform: scale(0.9); }
-        .audio-btn-off { opacity: 0.5; }
+        .header-btn:active { transform: scale(0.88); }
+        .audio-btn-off { color: var(--text-dim); opacity: 0.5; }
 
         /* --- Setup Screen --- */
         #setup-screen {
@@ -200,13 +201,20 @@
 <div id="app-container">
 
     <header class="app-header">
-        <button class="header-btn audio-btn-off" id="audio-toggle-btn" onclick="toggleAudioMute()" title="Sprachausgabe aktivieren">🔇</button> 
+        <button class="header-btn audio-btn-off" id="audio-toggle-btn" onclick="handleAudioHeaderClick()" title="Sprachausgabe aktivieren / Wiederholen">
+            <!-- Eleganter durchgestrichener Lautsprecher (Muted SVG) -->
+            <svg id="audio-icon-svg" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                <line x1="23" y1="9" x2="17" y2="15"></line>
+                <line x1="17" y1="9" x2="23" y2="15"></line>
+            </svg>
+        </button> 
         <div class="brand-logo">
             <div class="v5-title title-text">Mein inneres Kind</div>
             <div class="v5-sub sub-text">Sprich mit deinem 5-jährigen Ich!</div>
             <div class="v5-domain">myInnerKid.app</div>
         </div>
-        <button class="header-btn" onclick="openModal('menu-modal')" style="font-size: 30px;">☰</button>
+        <button class="header-btn" onclick="openModal('menu-modal')" style="font-size: 30px; color: var(--text-dim);">☰</button>
     </header>
 
     <!-- Setup Screen -->
@@ -429,22 +437,35 @@
     let discoveredStages = ['neutral'];
     let bondingProgress = 0;
 
-    /* AUDIO STUMMSCHALTUNG: Standardmäßig stumm (true) */
+    /* AUDIO STUMMSCHALTUNG & LETZTEN TEXT MERKEN */
     let isAudioMuted = true;
+    let lastAiMessageText = "";
 
-    function toggleAudioMute() {
-        isAudioMuted = !isAudioMuted;
-        const btn = document.getElementById('audio-toggle-btn');
+    function handleAudioHeaderClick() {
+        unlockMobileAudio();
+
         if (isAudioMuted) {
-            btn.innerText = '🔇';
-            btn.classList.add('audio-btn-off');
-            btn.title = "Sprachausgabe aktivieren";
-            if ('speechSynthesis' in window) window.speechSynthesis.cancel();
-        } else {
-            btn.innerText = '🔊';
+            // Ton aktivieren
+            isAudioMuted = false;
+            const btn = document.getElementById('audio-toggle-btn');
             btn.classList.remove('audio-btn-off');
-            btn.title = "Sprachausgabe stummschalten";
-            unlockMobileAudio();
+            btn.title = "Sprachausgabe aktiv / Erneut vorlesen";
+            
+            // Icon auf aktiven Lautsprecher wechseln
+            document.getElementById('audio-icon-svg').innerHTML = `
+                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+            `;
+
+            // Letzte Nachricht direkt abspielen
+            if (lastAiMessageText) {
+                speakText(lastAiMessageText);
+            }
+        } else {
+            // Bereits aktiv: Bei erneutem Klick den letzten Text noch einmal vorlesen
+            if (lastAiMessageText) {
+                speakText(lastAiMessageText);
+            }
         }
     }
 
@@ -577,7 +598,7 @@
             if(menuFaq) menuFaq.innerHTML = "💡 App Idea & FAQ";
             menuRestart.innerHTML = "🔄 Restart Mini-Me";
             menuAlbum.innerHTML = "🖼️ My Memories";
-            menuResetMemories.innerHTML = "🗑 Reset Memories";
+            menuResetMemories.innerHTML = "🗑️ Reset Memories";
             menuPrivacy.innerHTML = "🔒 Privacy Policy";
             menuImpressum.innerHTML = "📝 Imprint";
 
@@ -871,7 +892,7 @@
         return list[randomIndex];
     }
 
-    /* --- BEVORZUGUNG VON BEWÄHRTEN KINDLICHEN PITCH-EINSTELLUNGEN --- */
+    /* --- KINDLICHE SPRACHAUSGABE (BEWAHRTE PC-EINSTELLUNGEN) --- */
     function speakText(text) {
         if (isAudioMuted || !text || !('speechSynthesis' in window)) return;
 
@@ -885,12 +906,11 @@
         const langMap = { de: 'de-DE', en: 'en-US', es: 'es-ES', fr: 'fr-FR' };
         utterance.lang = langMap[userSettings.language] || 'de-DE';
 
-        /* WIEDERHERGESTELLTE KINDLICHE PARACETAMER FÜR DIE SCHÖNE PC-STIMME */
         if (userSettings.gender === 'boy') {
-            utterance.pitch = 1.18; // Ausgewogene Erhöhung für Jungen
+            utterance.pitch = 1.18; // Erhöhung für Jungen
             utterance.rate = 0.96;
         } else {
-            utterance.pitch = 1.28; // Sanfte Erhöhung für Mädchen
+            utterance.pitch = 1.28; // Erhöhung für Mädchen
             utterance.rate = 0.98;
         }
 
@@ -926,6 +946,10 @@
         if(userSettings.language === 'es') { labelMe = "YO"; labelMini = "MINI-YO"; }
         if(userSettings.language === 'fr') { labelMe = "MOI"; labelMini = "MINI-MOI"; }
         
+        if (sender === 'ai') {
+            lastAiMessageText = text; // Letzte Nachricht des Mini-Ichs merken
+        }
+
         const audioIcon = sender === 'ai' ? `<button class="audio-btn" onclick="unlockMobileAudio(); speakText('${text.replace(/'/g, "\\'")}')">🔊</button>` : '';
 
         msgDiv.innerHTML = `<div class="message-label"><span>${sender === 'user' ? labelMe : labelMini}</span>${audioIcon}</div><div>${text}</div>`;
