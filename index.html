@@ -339,7 +339,7 @@
 
             <button class="start-btn" id="start-btn-text" onclick="unlockMobileAudio(); startApp();" disabled>Speichern & Betreten</button>
 
-            <!-- SEO Content Bereich für AdSense -->
+            <!-- SEO Content Bereich -->
             <article class="seo-content" id="seo-content-article">
                 <h2 id="seo-title">Die Psychologie des Inneren Kindes</h2>
                 <p id="seo-p1">Jeder Mensch trägt Erinnerungen, Emotionen und Prägungen aus seiner Kindheit in sich. In der modernen Psychologie wird dieses Konzept als "Inneres Kind" bezeichnet. Es steht symbolisch für die Gefühle und Bedürfnisse, die wir in unseren ersten Lebensjahren erfahren haben.</p>
@@ -351,7 +351,6 @@
                 <p id="seo-p3">Regelmäßige Selbstreflexion stärkt die mentale Gesundheit. Die App nutzt Methoden aus der Schematherapie und der Achtsamkeitspraxis, um Nutzern einen sicheren Ort für Trost, Freude und emotionale Geborgenheit zu bieten – jederzeit griffbereit auf dem Smartphone.</p>
             </article>
 
-            <!-- Sichtbarer Footer für Crawler -->
             <div class="static-footer">
                 <a onclick="openModal('faq-modal')" id="footer-faq">FAQ & Info</a>
                 <a onclick="openModal('privacy-modal')" id="footer-privacy">Datenschutz</a>
@@ -621,7 +620,18 @@
     let lastAiMessageText = "";
     let selectedVoiceName = localStorage.getItem('myInnerKid_selectedVoice') || "";
 
-    // Dynamische Tagesimpuls-Logik (rotiert basierend auf dem Kalendertag)
+    // Automatische Videowiederherstellung (besonders für Mobilgeräte / iOS Safari)
+    window.addEventListener('DOMContentLoaded', () => {
+        const vidElem = document.getElementById('stage-video');
+        if (vidElem) {
+            vidElem.addEventListener('pause', () => {
+                if (vidElem.style.display !== 'none' && !vidElem.ended) {
+                    vidElem.play().catch(() => {});
+                }
+            });
+        }
+    });
+
     const dailyImpulses = {
         de: [
             "Begegne dir selbst mit der gleichen Sanftmut, die du einem kleinen Kind schenken würdest.",
@@ -813,7 +823,7 @@
             if(userSettings.language) changeLanguage(userSettings.language); 
             selectGender(userSettings.gender);
         } else {
-            changeLanguage('de'); // Standard beim Erstbesuch
+            changeLanguage('de');
         }
 
         const savedDiscovered = localStorage.getItem('myInnerKid_discovered');
@@ -867,7 +877,6 @@
         const setupDisclaimerText = document.getElementById('setup-disclaimer-text');
         const disclaimerCheckboxLabel = document.getElementById('disclaimer-checkbox-label');
 
-        // SEO Texte
         const seoTitle = document.getElementById('seo-title');
         const seoP1 = document.getElementById('seo-p1');
         const seoSub1 = document.getElementById('seo-sub1');
@@ -875,11 +884,9 @@
         const seoSub2 = document.getElementById('seo-sub2');
         const seoP3 = document.getElementById('seo-p3');
 
-        // Impuls Texte (Dynamisch)
         const impulseTitle = document.getElementById('impulse-title');
         const impulseText = document.getElementById('impulse-text');
 
-        // Footer Links
         const footerFaq = document.getElementById('footer-faq');
         const footerPrivacy = document.getElementById('footer-privacy');
         const footerImpressum = document.getElementById('footer-impressum');
@@ -988,7 +995,7 @@
             menuLangLabel.innerText = "Idioma";
             if(menuFaq) menuFaq.innerHTML = "💡 Idea de la app y FAQ";
             menuRestart.innerHTML = "🔄 Reiniciar Mini-Yo";
-            menuAlbum.innerHTML = "🖼️ Mis Recuerdos";
+            menuAlbum.innerHTML = "🖼️️ Mis Recuerdos";
             menuResetMemories.innerHTML = "🗑️ Restablecer Recuerdos";
             if(menuContact) menuContact.innerHTML = "✉️ Contacto";
             menuPrivacy.innerHTML = "🔒 Privacidad";
@@ -1040,7 +1047,7 @@
             menuRestart.innerHTML = "🔄 Redémarrer Mini-Moi";
             menuAlbum.innerHTML = "🖼️ Mes Souvenirs";
             menuResetMemories.innerHTML = "🗑️ Réinitialiser Souvenirs";
-            if(menuContact) menuContact.innerHTML = "✉️️ Contact";
+            if(menuContact) menuContact.innerHTML = "✉️ Contact";
             menuPrivacy.innerHTML = "🔒 Confidentialité";
             menuImpressum.innerHTML = "📝 Mentions légales";
 
@@ -1174,7 +1181,6 @@
         currentActivity = 'neutral';
         updateStageImage();
         
-        // Chatverlauf löschen & tagesaktuellen Impuls einsetzen
         const chatArea = document.getElementById('chat-area');
         const impulseHTML = document.getElementById('daily-impulse').outerHTML;
         chatArea.innerHTML = impulseHTML;
@@ -1210,39 +1216,39 @@
     }
 
     function updateStageImage() {
-        showStageLoader();
-
         const genderMedia = stageMedia[userSettings.gender] || stageMedia.boy;
         const mediaSrc = genderMedia[currentActivity] || genderMedia.neutral;
         
         const imgElem = document.getElementById('stage-image');
         const vidElem = document.getElementById('stage-video');
-        
-        imgElem.style.opacity = '0';
-        vidElem.style.opacity = '0';
 
         if (mediaSrc.endsWith('.mp4')) {
             imgElem.style.display = 'none';
+            imgElem.style.opacity = '0';
             vidElem.style.display = 'block';
-            
+
             if (!vidElem.src.endsWith(mediaSrc)) {
+                showStageLoader();
+                vidElem.style.opacity = '0';
                 vidElem.src = mediaSrc;
                 vidElem.load();
+
+                vidElem.oncanplay = () => {
+                    vidElem.play().catch(e => console.log("Autoplay blockiert:", e));
+                    vidElem.style.opacity = '1';
+                    hideStageLoader();
+                };
+            } else {
+                vidElem.style.opacity = '1';
+                hideStageLoader();
+                if (vidElem.paused) {
+                    vidElem.play().catch(e => console.log("Autoplay blockiert:", e));
+                }
             }
-
-            vidElem.oncanplay = () => {
-                vidElem.play().catch(e => console.log("Autoplay blockiert:", e));
-                vidElem.style.opacity = '1';
-                hideStageLoader();
-            };
-
-            setTimeout(() => {
-                vidElem.style.opacity = '1';
-                hideStageLoader();
-            }, 1800);
-
         } else {
+            showStageLoader();
             vidElem.style.display = 'none';
+            vidElem.style.opacity = '0';
             vidElem.pause();
             imgElem.style.display = 'block';
             
