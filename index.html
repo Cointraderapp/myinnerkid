@@ -1296,10 +1296,21 @@ SZENEN-STEUERUNG: Wenn das Gespräch zu einer der folgenden Szenen passt oder da
         } else if (data && data.error) {
             chatHistory.pop();
             
-            if (data.error.message && data.error.message.includes('high demand')) {
+            const errStr = (JSON.stringify(data.error) || '').toLowerCase();
+
+            // Erreichen des Tageslimits (Quota Exceeded / Resource Exhausted / 429)
+            if (errStr.includes('quota') || errStr.includes('resource_exhausted') || errStr.includes('429') || errStr.includes('limit')) {
+                let limitMsg = "Das Tageslimit für den Chat ist heute leider erreicht. 💤 Dein Mini-Ich ruht sich etwas aus. In 24 Stunden ist das Kontingent wieder neu freigeschaltet. Schau morgen gerne wieder vorbei!";
+                if(userSettings.language === 'en') limitMsg = "The daily limit for the chat has been reached for today. 💤 Your Mini-Me is resting. It will reset within 24 hours. Please check back tomorrow!";
+                if(userSettings.language === 'es') limitMsg = "Se ha alcanzado el límite diario del chat por hoy. 💤 Tu Mini-Yo está descansando. Se desbloqueará de nuevo en 24 horas. ¡Vuelve mañana!";
+                if(userSettings.language === 'fr') limitMsg = "La limite quotidienne du chat est atteinte pour aujourd'hui. 💤 Ton Mini-Moi se repose. Elle sera réinitialisée dans 24 heures. Reviens demain !";
+                
+                addMessage('ai', limitMsg);
+                speakText(limitMsg);
+            } else if (data.error.message && data.error.message.includes('high demand')) {
                 let busyMsg = "Puh, ich hab gerade sooo viele Gedanken im Kopf! 🙈 Gib mir bitte ganz kurz Zeit und frag mich gleich nochmal.";
                 if(userSettings.language === 'en') busyMsg = "Phew, I have sooo many thoughts in my head right now! 🙈 Give me a sec and ask me again in a moment.";
-                if(userSettings.language === 'es') busyMsg = "Uf, ¡tengo muuuuchos pensamientos en mi cabeza authorized de nuevo!";
+                if(userSettings.language === 'es') busyMsg = "Uf, ¡tengo muuuuchos pensamientos en mi cabeza de nuevo!";
                 if(userSettings.language === 'fr') busyMsg = "Ouf, j'ai teeeellement de pensées dans ma tête en ce moment ! 🙈 Laisse-moi une seconde et redemande-moi dans un instant.";
                 addMessage('ai', busyMsg);
                 speakText(busyMsg);
