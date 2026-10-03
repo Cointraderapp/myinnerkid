@@ -56,10 +56,10 @@
             }
         }
 
-        /* --- Header (Variante 5: Meditations-Style) --- */
+        /* --- Header (Perfekt zentriertes 3-Spalten Grid) --- */
         .app-header {
-            display: flex;
-            justify-content: space-between;
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
             align-items: center;
             padding: 12px 16px;
             background-color: #1a1818;
@@ -67,25 +67,35 @@
             z-index: 10;
             flex-shrink: 0;
         }
-        .brand-logo { text-align: center; flex-grow: 1; }
+
+        .audio-controls-group {
+            justify-self: start;
+            display: flex;
+            align-items: center;
+            gap: 2px;
+        }
+
+        .brand-logo { 
+            text-align: center; 
+            grid-column: 2;
+        }
+
+        .menu-header-btn {
+            justify-self: end;
+        }
+
         .v5-title { font-size: 1.35em; color: var(--text-light); font-weight: 800; letter-spacing: 0.3px; }
         .v5-sub { font-size: 11px; color: #ccc; font-style: italic; margin-top: 2px; }
         .v5-domain { font-size: 9.5px; color: var(--text-dim); margin-top: 3px; letter-spacing: 0.8px; }
 
         .header-btn {
             background: none; border: none; color: var(--text-light);
-            font-size: 26px; line-height: 1; cursor: pointer; padding: 4px;
+            font-size: 28px; line-height: 1; cursor: pointer; padding: 4px;
             display: flex; align-items: center; justify-content: center;
             transition: transform 0.2s, opacity 0.2s;
         }
         .header-btn:active { transform: scale(0.88); }
         .audio-btn-off { color: var(--text-dim); opacity: 0.5; }
-
-        .audio-controls-group {
-            display: flex;
-            align-items: center;
-            gap: 2px;
-        }
 
         /* --- Setup Screen --- */
         #setup-screen {
@@ -209,7 +219,6 @@
     <header class="app-header">
         <div class="audio-controls-group">
             <button class="header-btn audio-btn-off" id="audio-toggle-btn" onclick="handleAudioHeaderClick()" title="Sprachausgabe aktivieren">
-                <!-- Lautsprecher SVG (28px) -->
                 <svg id="audio-icon-svg" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
                     <line x1="23" y1="9" x2="17" y2="15"></line>
@@ -217,7 +226,7 @@
                 </svg>
             </button>
             <button class="header-btn" id="voice-settings-btn" onclick="openVoiceModal()" title="Stimme auswählen" style="font-size: 16px; opacity: 0.65; margin-left: 2px;">
-                ⚙️️
+                ⚙
             </button>
         </div>
 
@@ -226,7 +235,8 @@
             <div class="v5-sub sub-text">Sprich mit deinem 5-jährigen Ich!</div>
             <div class="v5-domain">myInnerKid.app</div>
         </div>
-        <button class="header-btn" onclick="openModal('menu-modal')" style="font-size: 30px; color: var(--text-dim);">☰</button>
+
+        <button class="header-btn menu-header-btn" onclick="openModal('menu-modal')" style="font-size: 30px; color: var(--text-dim);">☰</button>
     </header>
 
     <!-- Setup Screen -->
@@ -298,16 +308,37 @@
         </button>
     </div>
 
-    <!-- Modal zur Auswahl der Stimme -->
+    <!-- Modal zur Auswahl der Stimme + ANLEITUNG FÜR DAS HANDY -->
     <div class="modal-overlay" id="voice-modal">
-        <div class="modal-content" style="max-width: 340px; text-align: center;">
+        <div class="modal-content" style="max-width: 350px; text-align: center;">
             <h3 class="modal-title">Stimme auswählen</h3>
-            <div class="modal-text" style="font-size: 13px; line-height: 1.5; margin-bottom: 15px;">
-                Wähle eine der auf deinem Gerät/Browser verfügbaren Stimmen aus:
+            <div class="modal-text" style="font-size: 13px; line-height: 1.5; margin-bottom: 12px;">
+                Wähle eine der auf deinem Gerät verfügbaren Stimmen aus:
             </div>
-            <select id="voice-dropdown" class="lang-select" style="width: 100%; font-size: 12px; padding: 10px; margin-bottom: 20px;" onchange="saveSelectedVoice(this.value)">
+            
+            <select id="voice-dropdown" class="lang-select" style="width: 100%; font-size: 12px; padding: 10px; margin-bottom: 15px;" onchange="saveSelectedVoice(this.value)">
                 <!-- Dynamisch befüllt -->
             </select>
+
+            <!-- ANLEITUNG FÜR DAS SMARTPHONE -->
+            <div style="background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(243, 213, 163, 0.2); border-radius: 12px; padding: 12px; margin-bottom: 18px; text-align: left; font-size: 11px; line-height: 1.45; color: #c0b8b2;">
+                <strong style="color: var(--text-light); display: block; margin-bottom: 6px; font-size: 12px; text-align: center;">📱 Mehr & bessere Stimmen am Handy freischalten:</strong>
+                
+                <div style="margin-bottom: 8px;">
+                    <strong style="color: #fff;">iPhone / iPad (iOS):</strong><br>
+                    1. Öffne die <strong>Einstellungen</strong> deines iPhones.<br>
+                    2. Gehe zu <strong>Bedienungshilfen</strong> ➔ <strong>Gesprochene Inhalte</strong> ➔ <strong>Stimmen</strong> ➔ <strong>Deutsch</strong>.<br>
+                    3. Lade eine Stimme mit der Option <strong>"Erweitert"</strong> oder <strong>"Premium"</strong> (z.B. Helena oder Viktor) herunter.
+                </div>
+
+                <div>
+                    <strong style="color: #fff;">Android:</strong><br>
+                    1. Öffne die <strong>Einstellungen</strong> ➔ <strong>Text-in-Sprache</strong>.<br>
+                    2. Tippe auf das ⚙️ neben <strong>Google Sprachausgabe</strong>.<br>
+                    3. Wähle <strong>Sprachdaten installieren</strong> ➔ <strong>Deutsch (HD)</strong>.
+                </div>
+            </div>
+
             <div style="display: flex; gap: 10px;">
                 <button class="support-btn" onclick="testSelectedVoice()" style="background-color: #38322e; color: #ccc; margin-top: 0; flex: 1;">▶ Testen</button>
                 <button class="support-btn" onclick="closeModal('voice-modal')" style="margin-top: 0; flex: 1;">Speichern</button>
@@ -466,7 +497,7 @@
     let discoveredStages = ['neutral'];
     let bondingProgress = 0;
 
-    /* AUDIO STUMMSCHALTUNG & SPEICHERUNG DER MANUELLEN STIMMAUSWAHL */
+    /* AUDIO STUMMSCHALTUNG & TOGGLE LOGIK */
     let isAudioMuted = true;
     let lastAiMessageText = "";
     let selectedVoiceName = localStorage.getItem('myInnerKid_selectedVoice') || "";
@@ -526,7 +557,7 @@
         const currentLangPrefix = (userSettings.language || 'de');
 
         let filteredVoices = voices.filter(v => v.lang.startsWith(currentLangPrefix));
-        if (filteredVoices.length === 0) filteredVoices = voices; // Fallback falls Sprache exakt nicht gematcht
+        if (filteredVoices.length === 0) filteredVoices = voices;
 
         filteredVoices.forEach(v => {
             const opt = document.createElement('option');
@@ -557,7 +588,7 @@
             "Hallo! Ich bin dein kleines Mädchen. Schön, dass wir zusammen sprechen!" : 
             "Hallo! Ich bin dein kleiner Junge. Schön, dass wir zusammen sprechen!";
         
-        speakText(testMsg, true); // True zwingt Abspielen auch wenn stummgeschaltet
+        speakText(testMsg, true);
     }
 
     function unlockMobileAudio() {
@@ -677,7 +708,7 @@
             if(menuFaq) menuFaq.innerHTML = "💡 App Idea & FAQ";
             menuRestart.innerHTML = "🔄 Restart Mini-Me";
             menuAlbum.innerHTML = "🖼️ My Memories";
-            menuResetMemories.innerHTML = "🗑️ Reset Memories";
+            menuResetMemories.innerHTML = "🗑️️ Reset Memories";
             menuPrivacy.innerHTML = "🔒 Privacy Policy";
             menuImpressum.innerHTML = "📝 Imprint";
 
@@ -996,11 +1027,9 @@
         const voices = availableVoices.length ? availableVoices : window.speechSynthesis.getVoices();
         const currentLangPrefix = utterance.lang.split('-')[0];
         
-        // Prütfen ob eine manuell gewählte Stimme existiert
         let chosenVoice = voices.find(v => v.name === selectedVoiceName);
 
         if (!chosenVoice) {
-            // Automatische Bevorzugung von Premium/Siri/Google-Stimmen
             chosenVoice = voices.find(v => 
                 v.lang.startsWith(currentLangPrefix) && 
                 (v.name.includes('Natural') || v.name.includes('Siri') || v.name.includes('Google') || v.name.includes('Anna') || v.name.includes('Helena') || v.name.includes('Monica'))
