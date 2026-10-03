@@ -61,7 +61,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 12px 20px;
+            padding: 12px 16px;
             background-color: #1a1818;
             border-bottom: 1px solid #2d2927;
             z-index: 10;
@@ -74,12 +74,18 @@
 
         .header-btn {
             background: none; border: none; color: var(--text-light);
-            font-size: 28px; line-height: 1; cursor: pointer; padding: 4px;
+            font-size: 26px; line-height: 1; cursor: pointer; padding: 4px;
             display: flex; align-items: center; justify-content: center;
             transition: transform 0.2s, opacity 0.2s;
         }
         .header-btn:active { transform: scale(0.88); }
         .audio-btn-off { color: var(--text-dim); opacity: 0.5; }
+
+        .audio-controls-group {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+        }
 
         /* --- Setup Screen --- */
         #setup-screen {
@@ -201,14 +207,20 @@
 <div id="app-container">
 
     <header class="app-header">
-        <button class="header-btn audio-btn-off" id="audio-toggle-btn" onclick="handleAudioHeaderClick()" title="Sprachausgabe aktivieren">
-            <!-- Vergrößertes SVG Symbol (28px) -->
-            <svg id="audio-icon-svg" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-                <line x1="23" y1="9" x2="17" y2="15"></line>
-                <line x1="17" y1="9" x2="23" y2="15"></line>
-            </svg>
-        </button> 
+        <div class="audio-controls-group">
+            <button class="header-btn audio-btn-off" id="audio-toggle-btn" onclick="handleAudioHeaderClick()" title="Sprachausgabe aktivieren">
+                <!-- Lautsprecher SVG (28px) -->
+                <svg id="audio-icon-svg" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                    <line x1="23" y1="9" x2="17" y2="15"></line>
+                    <line x1="17" y1="9" x2="23" y2="15"></line>
+                </svg>
+            </button>
+            <button class="header-btn" id="voice-settings-btn" onclick="openVoiceModal()" title="Stimme auswählen" style="font-size: 16px; opacity: 0.65; margin-left: 2px;">
+                ⚙️️
+            </button>
+        </div>
+
         <div class="brand-logo">
             <div class="v5-title title-text">Mein inneres Kind</div>
             <div class="v5-sub sub-text">Sprich mit deinem 5-jährigen Ich!</div>
@@ -284,6 +296,23 @@
         <button id="send-btn" onclick="unlockMobileAudio(); sendMessage();">
             <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
         </button>
+    </div>
+
+    <!-- Modal zur Auswahl der Stimme -->
+    <div class="modal-overlay" id="voice-modal">
+        <div class="modal-content" style="max-width: 340px; text-align: center;">
+            <h3 class="modal-title">Stimme auswählen</h3>
+            <div class="modal-text" style="font-size: 13px; line-height: 1.5; margin-bottom: 15px;">
+                Wähle eine der auf deinem Gerät/Browser verfügbaren Stimmen aus:
+            </div>
+            <select id="voice-dropdown" class="lang-select" style="width: 100%; font-size: 12px; padding: 10px; margin-bottom: 20px;" onchange="saveSelectedVoice(this.value)">
+                <!-- Dynamisch befüllt -->
+            </select>
+            <div style="display: flex; gap: 10px;">
+                <button class="support-btn" onclick="testSelectedVoice()" style="background-color: #38322e; color: #ccc; margin-top: 0; flex: 1;">▶ Testen</button>
+                <button class="support-btn" onclick="closeModal('voice-modal')" style="margin-top: 0; flex: 1;">Speichern</button>
+            </div>
+        </div>
     </div>
 
     <!-- Burgermenü Modal -->
@@ -437,32 +466,29 @@
     let discoveredStages = ['neutral'];
     let bondingProgress = 0;
 
-    /* AUDIO STUMMSCHALTUNG & TOGGLE LOGIK */
+    /* AUDIO STUMMSCHALTUNG & SPEICHERUNG DER MANUELLEN STIMMAUSWAHL */
     let isAudioMuted = true;
     let lastAiMessageText = "";
+    let selectedVoiceName = localStorage.getItem('myInnerKid_selectedVoice') || "";
 
     function handleAudioHeaderClick() {
         unlockMobileAudio();
 
         if (isAudioMuted) {
-            // Ton AKTIVIEREN
             isAudioMuted = false;
             const btn = document.getElementById('audio-toggle-btn');
             btn.classList.remove('audio-btn-off');
             btn.title = "Sprachausgabe stummschalten";
             
-            // Icon auf aktives Wellen-Symbol ändern
             document.getElementById('audio-icon-svg').innerHTML = `
                 <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
                 <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
             `;
 
-            // Letzten Text abspielen
             if (lastAiMessageText) {
                 speakText(lastAiMessageText);
             }
         } else {
-            // Ton DEAKTIVIEREN / STUMMSCHALTEN
             isAudioMuted = true;
             if ('speechSynthesis' in window) {
                 window.speechSynthesis.cancel();
@@ -471,7 +497,6 @@
             btn.classList.add('audio-btn-off');
             btn.title = "Sprachausgabe aktivieren";
 
-            // Icon auf stummgeschaltet ändern
             document.getElementById('audio-icon-svg').innerHTML = `
                 <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
                 <line x1="23" y1="9" x2="17" y2="15"></line>
@@ -480,7 +505,7 @@
         }
     }
 
-    /* Web Speech Synth Initialisierung */
+    /* Web Speech Synth Initialisierung & Dropdown Befüllung */
     let availableVoices = [];
     function loadVoices() {
         if ('speechSynthesis' in window) {
@@ -490,6 +515,49 @@
     if ('speechSynthesis' in window) {
         window.speechSynthesis.onvoiceschanged = loadVoices;
         loadVoices();
+    }
+
+    function populateVoiceDropdown() {
+        const select = document.getElementById('voice-dropdown');
+        if (!select) return;
+        select.innerHTML = '';
+
+        const voices = availableVoices.length ? availableVoices : window.speechSynthesis.getVoices();
+        const currentLangPrefix = (userSettings.language || 'de');
+
+        let filteredVoices = voices.filter(v => v.lang.startsWith(currentLangPrefix));
+        if (filteredVoices.length === 0) filteredVoices = voices; // Fallback falls Sprache exakt nicht gematcht
+
+        filteredVoices.forEach(v => {
+            const opt = document.createElement('option');
+            opt.value = v.name;
+            opt.innerText = `${v.name} (${v.lang})`;
+            if (v.name === selectedVoiceName) opt.selected = true;
+            select.appendChild(opt);
+        });
+
+        if (!selectedVoiceName && filteredVoices.length > 0) {
+            selectedVoiceName = filteredVoices[0].name;
+        }
+    }
+
+    function openVoiceModal() {
+        populateVoiceDropdown();
+        openModal('voice-modal');
+    }
+
+    function saveSelectedVoice(name) {
+        selectedVoiceName = name;
+        localStorage.setItem('myInnerKid_selectedVoice', name);
+    }
+
+    function testSelectedVoice() {
+        unlockMobileAudio();
+        const testMsg = userSettings.gender === 'girl' ? 
+            "Hallo! Ich bin dein kleines Mädchen. Schön, dass wir zusammen sprechen!" : 
+            "Hallo! Ich bin dein kleiner Junge. Schön, dass wir zusammen sprechen!";
+        
+        speakText(testMsg, true); // True zwingt Abspielen auch wenn stummgeschaltet
     }
 
     function unlockMobileAudio() {
@@ -903,9 +971,9 @@
         return list[randomIndex];
     }
 
-    /* --- KINDLICHE SPRACHAUSGABE --- */
-    function speakText(text) {
-        if (isAudioMuted || !text || !('speechSynthesis' in window)) return;
+    /* --- KINDLICHE SPRACHAUSGABE MIT UNTERSTÜTZUNG FÜR GEWÄHLTE STIMME --- */
+    function speakText(text, force = false) {
+        if ((isAudioMuted && !force) || !text || !('speechSynthesis' in window)) return;
 
         window.speechSynthesis.cancel();
 
@@ -928,13 +996,19 @@
         const voices = availableVoices.length ? availableVoices : window.speechSynthesis.getVoices();
         const currentLangPrefix = utterance.lang.split('-')[0];
         
-        const preferredVoice = voices.find(v => 
-            v.lang.startsWith(currentLangPrefix) && 
-            (v.name.includes('Natural') || v.name.includes('Siri') || v.name.includes('Google') || v.name.includes('Anna') || v.name.includes('Helena') || v.name.includes('Monica'))
-        ) || voices.find(v => v.lang.startsWith(currentLangPrefix));
+        // Prütfen ob eine manuell gewählte Stimme existiert
+        let chosenVoice = voices.find(v => v.name === selectedVoiceName);
 
-        if (preferredVoice) {
-            utterance.voice = preferredVoice;
+        if (!chosenVoice) {
+            // Automatische Bevorzugung von Premium/Siri/Google-Stimmen
+            chosenVoice = voices.find(v => 
+                v.lang.startsWith(currentLangPrefix) && 
+                (v.name.includes('Natural') || v.name.includes('Siri') || v.name.includes('Google') || v.name.includes('Anna') || v.name.includes('Helena') || v.name.includes('Monica'))
+            ) || voices.find(v => v.lang.startsWith(currentLangPrefix));
+        }
+
+        if (chosenVoice) {
+            utterance.voice = chosenVoice;
         }
 
         window.speechSynthesis.speak(utterance);
@@ -961,7 +1035,7 @@
             lastAiMessageText = text;
         }
 
-        const audioIcon = sender === 'ai' ? `<button class="audio-btn" onclick="unlockMobileAudio(); speakText('${text.replace(/'/g, "\\'")}')">🔊</button>` : '';
+        const audioIcon = sender === 'ai' ? `<button class="audio-btn" onclick="unlockMobileAudio(); speakText('${text.replace(/'/g, "\\'")}', true)">🔊</button>` : '';
 
         msgDiv.innerHTML = `<div class="message-label"><span>${sender === 'user' ? labelMe : labelMini}</span>${audioIcon}</div><div>${text}</div>`;
         chatArea.appendChild(msgDiv);
