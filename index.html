@@ -90,7 +90,7 @@
         .header-btn:active { transform: scale(0.88); }
         .audio-btn-off { color: var(--text-dim); opacity: 0.5; }
 
-        /* --- Setup Screen (Neu: Scrollbar und Content-Fokus) --- */
+        /* --- Setup Screen --- */
         #setup-screen {
             position: absolute; top: 0; left: 0; right: 0; bottom: 0;
             background-color: var(--bg-color); z-index: 100;
@@ -156,7 +156,7 @@
             transition: all 0.3s ease;
         }
 
-        /* --- SEO & AdSense Content Block (NEU) --- */
+        /* --- SEO Content Bereich --- */
         .seo-content {
             width: 100%; max-width: 360px; margin: 0 auto 30px auto;
             border-top: 1px solid #38322e; padding-top: 30px;
@@ -206,7 +206,7 @@
         .heart-svg { width: 16px; height: 16px; display: block; }
         .heart-val { font-size: 11px; font-weight: 700; color: var(--text-light); letter-spacing: 0.3px; }
 
-        /* --- Chat Area & Impuls (NEU) --- */
+        /* --- Chat Area & Impuls --- */
         #chat-area { 
             flex: 1 1 0; min-height: 0; overflow-y: auto; padding: 12px; 
             display: flex; flex-direction: column; gap: 10px; 
@@ -387,7 +387,7 @@
     <div id="chat-area">
         <div class="daily-impulse" id="daily-impulse">
             <div class="daily-impulse-title" id="impulse-title">Tages-Impuls</div>
-            <div class="daily-impulse-text" id="impulse-text">"Begegne dir selbst mit der gleichen Sanftmut, die du einem kleinen Kind schenken würdest."</div>
+            <div class="daily-impulse-text" id="impulse-text"></div>
         </div>
         <!-- Chatnachrichten landen hier -->
     </div>
@@ -425,7 +425,7 @@
                 
                 <div style="margin-bottom: 8px;">
                     1. <strong>Einstellungen</strong> ➔ <strong>Bedienungshilfen</strong> ➔ ganz oben unter SEHEN ➔ <strong>Lesen & Sprechen</strong> ➔ <strong>Stimmen</strong> ➔ <strong>Deutsch</strong>.<br>
-                    2. Lade folgende Empfehlungen mit dem ☁️️-Symbol herunter:<br>
+                    2. Lade folgende Empfehlungen mit dem ☁-Symbol herunter:<br>
                     • 👧 <strong>Mädchen:</strong> <strong>Anna (premium)</strong> oder <strong>Helena (premium)</strong><br>
                     • 👦 <strong>Junge:</strong> <strong>Markus (erweitert)</strong> oder <strong>Viktor (erweitert)</strong>
                 </div>
@@ -621,6 +621,54 @@
     let lastAiMessageText = "";
     let selectedVoiceName = localStorage.getItem('myInnerKid_selectedVoice') || "";
 
+    // Dynamische Tagesimpuls-Logik (rotiert basierend auf dem Kalendertag)
+    const dailyImpulses = {
+        de: [
+            "Begegne dir selbst mit der gleichen Sanftmut, die du einem kleinen Kind schenken würdest.",
+            "Du darfst Pausen machen. Dein Wert hängt nicht von deiner Produktivität ab.",
+            "Es ist okay, Fehler zu machen. Du wächst und lernst jeden Tag dazu.",
+            "Alle deine Gefühle haben ihre Berechtigung und dürfen gefühlt werden.",
+            "Nimm dir heute einen Moment, um auf deine eigenen Bedürfnisse zu hören.",
+            "Schließe kurz die Augen und atme tief ein. Du bist hier und jetzt in Sicherheit.",
+            "Lass den Druck los, perfekt sein zu müssen. Du bist gut genug, genau so, wie du bist."
+        ],
+        en: [
+            "Treat yourself with the same gentleness you would offer a small child.",
+            "You are allowed to take breaks. Your worth is not tied to your productivity.",
+            "It is okay to make mistakes. You are growing and learning every day.",
+            "All your feelings are valid and deserve to be felt.",
+            "Take a moment today to listen to your own needs.",
+            "Close your eyes for a moment and take a deep breath. You are safe here and now.",
+            "Let go of the pressure to be perfect. You are good enough exactly as you are."
+        ],
+        es: [
+            "Trátate a ti mismo con la misma dulzura que le ofrecerías a un niño pequeño.",
+            "Tienes derecho a hacer pausas. Tu valor no depende de tu productividad.",
+            "Está bien cometer errores. Estás creciendo y aprendiendo todos los días.",
+            "Todos tus sentimientos son válidos y merecen ser sentidos.",
+            "Tómate un momento hoy para escuchar tus propias necesidades.",
+            "Cierra los ojos un momento y respira profundamente. Estás a salvo aquí y ahora.",
+            "Suelta la presión de tener que ser perfecto. Eres suficiente tal como eres."
+        ],
+        fr: [
+            "Traite-toi avec la même douceur que tu offrirais à un petit enfant.",
+            "Tu as le droit de faire des pauses. Ta valeur ne dépend pas de ta productivité.",
+            "C'est normal de faire des erreurs. Tu grandis et apprends chaque jour.",
+            "Tous tes sentiments sont valides et méritent d'être ressentis.",
+            "Prends un moment aujourd'hui pour écouter tes propres besoins.",
+            "Ferme les yeux un instant et respire profondément. Tu es en sécurité ici et maintenant.",
+            "Lâche la pression d'être parfait. Tu es assez bien exactement comme tu es."
+        ]
+    };
+
+    function getDailyImpulse() {
+        const today = new Date();
+        const dayOfYear = Math.floor((today - new Date(today.getFullYear(), 0, 0)) / 1000 / 60 / 60 / 24);
+        const lang = userSettings.language || 'de';
+        const list = dailyImpulses[lang] || dailyImpulses['de'];
+        return `"${list[dayOfYear % list.length]}"`;
+    }
+
     function showStageLoader() {
         const loader = document.getElementById('stage-loader');
         if (loader) loader.classList.remove('hidden');
@@ -764,6 +812,8 @@
             userSettings = JSON.parse(savedSettings);
             if(userSettings.language) changeLanguage(userSettings.language); 
             selectGender(userSettings.gender);
+        } else {
+            changeLanguage('de'); // Standard beim Erstbesuch
         }
 
         const savedDiscovered = localStorage.getItem('myInnerKid_discovered');
@@ -825,7 +875,7 @@
         const seoSub2 = document.getElementById('seo-sub2');
         const seoP3 = document.getElementById('seo-p3');
 
-        // Impuls Texte
+        // Impuls Texte (Dynamisch)
         const impulseTitle = document.getElementById('impulse-title');
         const impulseText = document.getElementById('impulse-text');
 
@@ -856,7 +906,6 @@
         const confirmOk = document.getElementById('confirm-btn-ok');
 
         const privacyBtn = document.getElementById('privacy-btn');
-
         const albumModalTitle = document.getElementById('album-modal-title');
         const albumCloseBtn = document.getElementById('album-close-btn');
 
@@ -879,7 +928,7 @@
             if(seoP3) seoP3.innerText = "Regular self-reflection strengthens mental health. The app uses methods from schema therapy and mindfulness practice to offer users a safe place for comfort, joy, and emotional security - always at hand on your smartphone.";
 
             if(impulseTitle) impulseTitle.innerText = "Daily Impulse";
-            if(impulseText) impulseText.innerText = "\"Treat yourself with the same gentleness you would offer a small child.\"";
+            if(impulseText) impulseText.innerText = getDailyImpulse();
 
             if(footerFaq) footerFaq.innerText = "FAQ & Info";
             if(footerPrivacy) footerPrivacy.innerText = "Privacy Policy";
@@ -907,7 +956,6 @@
             if(confirmOk) confirmOk.innerText = "Reset";
 
             if(privacyBtn) privacyBtn.innerText = "Got it";
-
             if(albumModalTitle) albumModalTitle.innerText = "My Memories";
             if(albumCloseBtn) albumCloseBtn.innerText = "Close";
         }
@@ -930,7 +978,7 @@
             if(seoP3) seoP3.innerText = "La autorreflexión regular fortalece la salud mental. La app utiliza métodos de la terapia de esquemas y el mindfulness para ofrecer a los usuarios un lugar seguro de consuelo, alegría y seguridad emocional, siempre a mano en tu teléfono.";
 
             if(impulseTitle) impulseTitle.innerText = "Impulso Diario";
-            if(impulseText) impulseText.innerText = "\"Trátate a ti mismo con la misma dulzura que le ofrecerías a un niño pequeño.\"";
+            if(impulseText) impulseText.innerText = getDailyImpulse();
 
             if(footerFaq) footerFaq.innerText = "FAQ e Info";
             if(footerPrivacy) footerPrivacy.innerText = "Privacidad";
@@ -958,7 +1006,6 @@
             if(confirmOk) confirmOk.innerText = "Restablecer";
 
             if(privacyBtn) privacyBtn.innerText = "Entendido";
-
             if(albumModalTitle) albumModalTitle.innerText = "Mis Recuerdos";
             if(albumCloseBtn) albumCloseBtn.innerText = "Cerrar";
         }
@@ -981,7 +1028,7 @@
             if(seoP3) seoP3.innerText = "L'autoréflexion régulière renforce la santé mentale. L'application utilise des méthodes issues de la thérapie des schémas et de la pleine conscience pour offrir aux utilisateurs un lieu sûr de réconfort, de joie et de sécurité émotionnelle - toujours à portée de main sur votre smartphone.";
 
             if(impulseTitle) impulseTitle.innerText = "Impulsion Quotidienne";
-            if(impulseText) impulseText.innerText = "\"Traite-toi avec la même douceur que tu offrirais à un petit enfant.\"";
+            if(impulseText) impulseText.innerText = getDailyImpulse();
 
             if(footerFaq) footerFaq.innerText = "FAQ & Info";
             if(footerPrivacy) footerPrivacy.innerText = "Confidentialité";
@@ -993,7 +1040,7 @@
             menuRestart.innerHTML = "🔄 Redémarrer Mini-Moi";
             menuAlbum.innerHTML = "🖼️ Mes Souvenirs";
             menuResetMemories.innerHTML = "🗑️ Réinitialiser Souvenirs";
-            if(menuContact) menuContact.innerHTML = "✉️ Contact";
+            if(menuContact) menuContact.innerHTML = "✉️️ Contact";
             menuPrivacy.innerHTML = "🔒 Confidentialité";
             menuImpressum.innerHTML = "📝 Mentions légales";
 
@@ -1009,7 +1056,6 @@
             if(confirmOk) confirmOk.innerText = "Réinitialiser";
 
             if(privacyBtn) privacyBtn.innerText = "Compris";
-
             if(albumModalTitle) albumModalTitle.innerText = "Mes Souvenirs";
             if(albumCloseBtn) albumCloseBtn.innerText = "Fermer";
         }
@@ -1032,7 +1078,7 @@
             if(seoP3) seoP3.innerText = "Regelmäßige Selbstreflexion stärkt die mentale Gesundheit. Die App nutzt Methoden aus der Schematherapie und der Achtsamkeitspraxis, um Nutzern einen sicheren Ort für Trost, Freude und emotionale Geborgenheit zu bieten – jederzeit griffbereit auf dem Smartphone.";
 
             if(impulseTitle) impulseTitle.innerText = "Tages-Impuls";
-            if(impulseText) impulseText.innerText = "\"Begegne dir selbst mit der gleichen Sanftmut, die du einem kleinen Kind schenken würdest.\"";
+            if(impulseText) impulseText.innerText = getDailyImpulse();
 
             if(footerFaq) footerFaq.innerText = "FAQ & Info";
             if(footerPrivacy) footerPrivacy.innerText = "Datenschutz";
@@ -1060,7 +1106,6 @@
             if(confirmOk) confirmOk.innerText = "Zurücksetzen";
 
             if(privacyBtn) privacyBtn.innerText = "Verstanden";
-
             if(albumModalTitle) albumModalTitle.innerText = "Meine Erinnerungen";
             if(albumCloseBtn) albumCloseBtn.innerText = "Schließen";
         }
@@ -1129,7 +1174,7 @@
         currentActivity = 'neutral';
         updateStageImage();
         
-        // Chatverlauf löschen & Tagesimpuls behalten
+        // Chatverlauf löschen & tagesaktuellen Impuls einsetzen
         const chatArea = document.getElementById('chat-area');
         const impulseHTML = document.getElementById('daily-impulse').outerHTML;
         chatArea.innerHTML = impulseHTML;
