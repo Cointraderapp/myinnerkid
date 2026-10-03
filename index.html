@@ -172,9 +172,6 @@
         .msg-user { background-color: var(--chat-user); color: #111; align-self: flex-end; border-bottom-right-radius: 4px; }
         .msg-ai { background-color: var(--chat-ai); color: #111; align-self: flex-start; border-bottom-left-radius: 4px; }
 
-        .audio-btn { background: none; border: none; cursor: pointer; font-size: 12px; opacity: 0.6; transition: opacity 0.2s; margin-left: 8px; }
-        .audio-btn:hover { opacity: 1; }
-
         /* --- Input Area --- */
         #input-area { 
             display: flex; 
@@ -792,7 +789,7 @@
             if(menuFaq) menuFaq.innerHTML = "💡 App-Idee & FAQ";
             menuRestart.innerHTML = "🔄 Mini-Ich neu starten";
             menuAlbum.innerHTML = "🖼️ Meine Erinnerungen";
-            menuResetMemories.innerHTML = "🗑️ Erinnerungen zurücksetzen";
+            menuResetMemories.innerHTML = "🗑️️ Erinnerungen zurücksetzen";
             menuPrivacy.innerHTML = "🔒 Datenschutz";
             menuImpressum.innerHTML = "📝 Impressum";
 
@@ -1061,9 +1058,7 @@
             lastAiMessageText = text;
         }
 
-        const audioIcon = sender === 'ai' ? `<button class="audio-btn" onclick="unlockMobileAudio(); speakText('${text.replace(/'/g, "\\'")}', true)">🔊</button>` : '';
-
-        msgDiv.innerHTML = `<div class="message-label"><span>${sender === 'user' ? labelMe : labelMini}</span>${audioIcon}</div><div>${text}</div>`;
+        msgDiv.innerHTML = `<div class="message-label"><span>${sender === 'user' ? labelMe : labelMini}</span></div><div>${text}</div>`;
         chatArea.appendChild(msgDiv);
         chatArea.scrollTop = chatArea.scrollHeight;
     }
