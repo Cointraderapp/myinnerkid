@@ -155,8 +155,15 @@
         .audio-btn { background: none; border: none; cursor: pointer; font-size: 12px; opacity: 0.6; transition: opacity 0.2s; margin-left: 8px; }
         .audio-btn:hover { opacity: 1; }
 
-        /* --- Input Area --- */
-        #input-area { display: flex; align-items: center; padding: 12px 14px; background-color: #211e1c; border-top: 1px solid #2d2927; flex-shrink: 0; }
+        /* --- Input Area (Angepasst für Smartphones: Eingabefeld etwas höher platziert) --- */
+        #input-area { 
+            display: flex; 
+            align-items: center; 
+            padding: 14px 14px calc(22px + env(safe-area-inset-bottom, 0px)) 14px; 
+            background-color: #211e1c; 
+            border-top: 1px solid #2d2927; 
+            flex-shrink: 0; 
+        }
         #chat-input { flex-grow: 1; background-color: #312c29; border: 1px solid #423c38; color: #fff; padding: 10px 16px; border-radius: 22px; font-size: 14px; outline: none; }
 
         #send-btn { background-color: var(--chat-user); color: #1a1818; border: none; width: 42px; height: 42px; border-radius: 50%; margin-left: 8px; cursor: pointer; display: flex; justify-content: center; align-items: center; flex-shrink: 0; }
@@ -287,12 +294,52 @@
             <hr style="border: 0; border-top: 1px solid #38322e; margin-bottom: 10px;">
 
             <ul class="menu-list">
+                <li onclick="openModalFromMenu('faq-modal')" id="menu-faq">💡 App-Idee & FAQ</li>
                 <li onclick="restartApp()" id="menu-restart">🔄 Mini-Ich neu starten</li>
                 <li onclick="openModalFromMenu('album-modal'); renderAlbum();" id="menu-album">🖼️ Meine Erinnerungen</li>
                 <li onclick="resetMemories()" id="menu-reset-memories">🗑️ Erinnerungen zurücksetzen</li>
                 <li onclick="openModalFromMenu('privacy-modal')" id="menu-privacy">🔒 Datenschutz</li>
                 <li onclick="openModalFromMenu('impressum-modal')" id="menu-impressum">📝 Impressum</li>
             </ul>
+        </div>
+    </div>
+
+    <!-- App-Idee & FAQ Modal -->
+    <div class="modal-overlay" id="faq-modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('faq-modal')">×</button>
+            <button class="support-btn" onclick="closeModal('faq-modal')" style="margin-bottom: 15px;">Schließen</button>
+            <h3 class="modal-title">App-Idee & FAQ</h3>
+            
+            <div class="modal-text" style="font-size: 13px; line-height: 1.6;">
+                <strong style="color: var(--text-light); font-size: 14px;">Was ist myInnerKid.app?</strong><br>
+                myInnerKid.app erschafft einen geschützten, visuellen Raum, in dem du deinem 5-jährigen Ich begegnen kannst. Durch achtsame Dialoge und eine sanfte Sprachausgabe kannst du innehalten, alte Erinnerungen aufleben lassen und deinem kleinen Ich die Geborgenheit schenken, die es braucht.<br><br>
+
+                <hr style="border: 0; border-top: 1px solid #38322e; margin: 12px 0;">
+
+                <strong style="color: var(--text-light); font-size: 14px;">Der psychologische Hintergrund</strong><br><br>
+                • <strong>Arbeit mit dem Inneren Kind:</strong><br>
+                In der modernen Psychologie steht das „Innere Kind“ für die Summe aller kindlichen Prägungen, Gefühle und unerfüllten Bedürfnisse. Die Begegnung hilft dabei, Verhaltensmuster und Emotionen im Erwachsenenalter besser zu verstehen.<br><br>
+                • <strong>Liebevolle Selbstbegleitung & Geborgenheit:</strong><br>
+                Indem du deinem 5-jährigen Ich heute verständnisvoll, schützend und aufmerksam begegnest, schenkst du dir selbst im Hier und Jetzt mehr Selbstmitgefühl, Ruhe und innere Sicherheit.<br><br>
+                • <strong>Visuelle Immersion & Vertrauen:</strong><br>
+                Verschiedene Interaktionsorte (Maltisch, Pause, Bauklötze) und die Beziehungsanzeige symbolisieren Schritt für Schritt deinen Verbindungsaufbau zu deinem inneren Kind.<br><br>
+
+                <hr style="border: 0; border-top: 1px solid #38322e; margin: 12px 0;">
+
+                <strong style="color: var(--text-light); font-size: 14px;">Häufige Fragen (FAQ)</strong><br><br>
+                • <strong>Wie entstehen die Antworten?</strong><br>
+                Die Antworten werden mithilfe künstlicher Intelligenz (Google Gemini) generiert und sind speziell darauf programmiert, stets fürsorglich, warmherzig und kindgerecht zu antworten.<br><br>
+                • <strong>Werden meine Nachrichten gespeichert?</strong><br>
+                Nein. Deine Chats und Einstellungen verbleiben ausschließlich lokal auf deinem Gerät in deinem Browser-Speicher.<br><br>
+
+                <hr style="border: 0; border-top: 1px solid #38322e; margin: 12px 0;">
+
+                <strong style="color: var(--text-light);">Wichtiger Hinweis</strong><br>
+                <span style="font-size: 11px; opacity: 0.85;">Die myInnerKid.app ist ein Tool zur persönlichen Selbstreflexion und Achtsamkeit. Die Anwendung ersetzt keine psychotherapeutische oder medizinische Behandlung.</span>
+            </div>
+
+            <button class="support-btn" onclick="closeModal('faq-modal')">Schließen</button>
         </div>
     </div>
 
@@ -311,6 +358,7 @@
     <div class="modal-overlay" id="privacy-modal">
         <div class="modal-content">
             <button class="modal-close" onclick="closeModal('privacy-modal')">×</button>
+            <button class="support-btn" onclick="closeModal('privacy-modal')" style="margin-bottom: 15px;">Schließen</button>
             <h3 class="modal-title">Datenschutz</h3>
             <div class="modal-text">
                 <strong>Dein Raum ist sicher.</strong><br><br>
@@ -324,7 +372,8 @@
     <!-- Impressum Modal -->
     <div class="modal-overlay" id="impressum-modal">
         <div class="modal-content">
-            <button class="modal-close" onclick="closeModal('impressum-modal')">Schließen</button>
+            <button class="modal-close" onclick="closeModal('impressum-modal')">×</button>
+            <button class="support-btn" onclick="closeModal('impressum-modal')" style="margin-bottom: 15px;">Schließen</button>
             <h3 class="modal-title">Impressum</h3>
             <div class="modal-text" style="font-size: 13px; line-height: 1.6;">
                 <strong>Angaben gemäß § 5 DDG</strong><br>
@@ -467,6 +516,7 @@
         
         const menuTitle = document.getElementById('menu-title');
         const menuLangLabel = document.getElementById('menu-lang-label');
+        const menuFaq = document.getElementById('menu-faq');
         const menuRestart = document.getElementById('menu-restart');
         const menuResetMemories = document.getElementById('menu-reset-memories');
         const menuAlbum = document.getElementById('menu-album');
@@ -488,6 +538,7 @@
 
             menuTitle.innerText = "Menu";
             menuLangLabel.innerText = "Language";
+            if(menuFaq) menuFaq.innerHTML = "💡 App Idea & FAQ";
             menuRestart.innerHTML = "🔄 Restart Mini-Me";
             menuAlbum.innerHTML = "🖼️ My Memories";
             menuResetMemories.innerHTML = "🗑️ Reset Memories";
@@ -509,6 +560,7 @@
 
             menuTitle.innerText = "Menú";
             menuLangLabel.innerText = "Idioma";
+            if(menuFaq) menuFaq.innerHTML = "💡 Idea de la app y FAQ";
             menuRestart.innerHTML = "🔄 Reiniciar Mini-Yo";
             menuAlbum.innerHTML = "🖼️ Mis Recuerdos";
             menuResetMemories.innerHTML = "🗑️ Restablecer Recuerdos";
@@ -530,6 +582,7 @@
 
             menuTitle.innerText = "Menu";
             menuLangLabel.innerText = "Langue";
+            if(menuFaq) menuFaq.innerHTML = "💡 Idée de l'appli & FAQ";
             menuRestart.innerHTML = "🔄 Redémarrer Mini-Moi";
             menuAlbum.innerHTML = "🖼️ Mes Souvenirs";
             menuResetMemories.innerHTML = "🗑️ Réinitialiser Souvenirs";
@@ -551,6 +604,7 @@
 
             menuTitle.innerText = "Menü";
             menuLangLabel.innerText = "Sprache";
+            if(menuFaq) menuFaq.innerHTML = "💡 App-Idee & FAQ";
             menuRestart.innerHTML = "🔄 Mini-Ich neu starten";
             menuAlbum.innerHTML = "🖼️ Meine Erinnerungen";
             menuResetMemories.innerHTML = "🗑️ Erinnerungen zurücksetzen";
