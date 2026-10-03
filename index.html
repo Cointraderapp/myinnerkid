@@ -74,7 +74,7 @@
 
         .header-btn {
             background: none; border: none; color: var(--text-light);
-            font-size: 24px; line-height: 1; cursor: pointer; padding: 4px;
+            font-size: 28px; line-height: 1; cursor: pointer; padding: 4px;
             display: flex; align-items: center; justify-content: center;
             transition: transform 0.2s, opacity 0.2s;
         }
@@ -201,9 +201,9 @@
 <div id="app-container">
 
     <header class="app-header">
-        <button class="header-btn audio-btn-off" id="audio-toggle-btn" onclick="handleAudioHeaderClick()" title="Sprachausgabe aktivieren / Wiederholen">
-            <!-- Eleganter durchgestrichener Lautsprecher (Muted SVG) -->
-            <svg id="audio-icon-svg" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <button class="header-btn audio-btn-off" id="audio-toggle-btn" onclick="handleAudioHeaderClick()" title="Sprachausgabe aktivieren">
+            <!-- Vergrößertes SVG Symbol (28px) -->
+            <svg id="audio-icon-svg" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
                 <line x1="23" y1="9" x2="17" y2="15"></line>
                 <line x1="17" y1="9" x2="23" y2="15"></line>
@@ -437,7 +437,7 @@
     let discoveredStages = ['neutral'];
     let bondingProgress = 0;
 
-    /* AUDIO STUMMSCHALTUNG & LETZTEN TEXT MERKEN */
+    /* AUDIO STUMMSCHALTUNG & TOGGLE LOGIK */
     let isAudioMuted = true;
     let lastAiMessageText = "";
 
@@ -445,27 +445,38 @@
         unlockMobileAudio();
 
         if (isAudioMuted) {
-            // Ton aktivieren
+            // Ton AKTIVIEREN
             isAudioMuted = false;
             const btn = document.getElementById('audio-toggle-btn');
             btn.classList.remove('audio-btn-off');
-            btn.title = "Sprachausgabe aktiv / Erneut vorlesen";
+            btn.title = "Sprachausgabe stummschalten";
             
-            // Icon auf aktiven Lautsprecher wechseln
+            // Icon auf aktives Wellen-Symbol ändern
             document.getElementById('audio-icon-svg').innerHTML = `
                 <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
                 <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
             `;
 
-            // Letzte Nachricht direkt abspielen
+            // Letzten Text abspielen
             if (lastAiMessageText) {
                 speakText(lastAiMessageText);
             }
         } else {
-            // Bereits aktiv: Bei erneutem Klick den letzten Text noch einmal vorlesen
-            if (lastAiMessageText) {
-                speakText(lastAiMessageText);
+            // Ton DEAKTIVIEREN / STUMMSCHALTEN
+            isAudioMuted = true;
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
             }
+            const btn = document.getElementById('audio-toggle-btn');
+            btn.classList.add('audio-btn-off');
+            btn.title = "Sprachausgabe aktivieren";
+
+            // Icon auf stummgeschaltet ändern
+            document.getElementById('audio-icon-svg').innerHTML = `
+                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                <line x1="23" y1="9" x2="17" y2="15"></line>
+                <line x1="17" y1="9" x2="23" y2="15"></line>
+            `;
         }
     }
 
@@ -892,7 +903,7 @@
         return list[randomIndex];
     }
 
-    /* --- KINDLICHE SPRACHAUSGABE (BEWAHRTE PC-EINSTELLUNGEN) --- */
+    /* --- KINDLICHE SPRACHAUSGABE --- */
     function speakText(text) {
         if (isAudioMuted || !text || !('speechSynthesis' in window)) return;
 
@@ -907,10 +918,10 @@
         utterance.lang = langMap[userSettings.language] || 'de-DE';
 
         if (userSettings.gender === 'boy') {
-            utterance.pitch = 1.18; // Erhöhung für Jungen
+            utterance.pitch = 1.18;
             utterance.rate = 0.96;
         } else {
-            utterance.pitch = 1.28; // Erhöhung für Mädchen
+            utterance.pitch = 1.28;
             utterance.rate = 0.98;
         }
 
@@ -947,7 +958,7 @@
         if(userSettings.language === 'fr') { labelMe = "MOI"; labelMini = "MINI-MOI"; }
         
         if (sender === 'ai') {
-            lastAiMessageText = text; // Letzte Nachricht des Mini-Ichs merken
+            lastAiMessageText = text;
         }
 
         const audioIcon = sender === 'ai' ? `<button class="audio-btn" onclick="unlockMobileAudio(); speakText('${text.replace(/'/g, "\\'")}')">🔊</button>` : '';
