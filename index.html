@@ -422,7 +422,7 @@
 
     /* ElevenLabs API Einstellungen mit voll kompatiblen Free-Tier Standardstimmen */
     const elevenLabsApiKey = "sk_e9fed003bce3469d83a50231c70b117b197f7738b43c17d1"; 
-    const elevenLabsVoiceBoy = "pNInz6obpgDQGcFmaJgB";  // Adam (Standard Premade)
+    const elevenLabsVoiceBoy = "MF3mGyEYCl7XYWbV9V6O";  // Elli (Standard Premade - Sanfte Basis)
     const elevenLabsVoiceGirl = "EXAVITQu4vr4xnSDxMaL"; // Bella (Standard Premade)
 
     let userSettings = { gender: 'girl', language: 'de' };
@@ -647,7 +647,7 @@
             if(menuFaq) menuFaq.innerHTML = "💡 App-Idee & FAQ";
             menuRestart.innerHTML = "🔄 Mini-Ich neu starten";
             menuAlbum.innerHTML = "🖼️ Meine Erinnerungen";
-            menuResetMemories.innerHTML = "🗑️ Erinnerungen zurücksetzen";
+            menuResetMemories.innerHTML = "🗑️️ Erinnerungen zurücksetzen";
             menuPrivacy.innerHTML = "🔒 Datenschutz";
             menuImpressum.innerHTML = "📝 Impressum";
 
@@ -854,6 +854,7 @@
         return list[randomIndex];
     }
 
+    /* --- ELEVENLABS SPRACHAUSGABE MIT KINDLICHER PITCH-MODULATION --- */
     async function speakText(text) {
         if (!text) return;
 
@@ -875,8 +876,8 @@
                         text: cleanText,
                         model_id: "eleven_multilingual_v2",
                         voice_settings: {
-                            stability: 0.50,
-                            similarity_boost: 0.80
+                            stability: 0.45,
+                            similarity_boost: 0.85
                         }
                     })
                 });
@@ -898,6 +899,16 @@
                     const audioBuffer = await decodeData(arrayBuffer);
                     const source = audioCtx.createBufferSource();
                     source.buffer = audioBuffer;
+
+                    /* KINDLICHER PITCH- & SPEED-EFFEKT (Web Audio API) */
+                    if (userSettings.gender === 'boy') {
+                        source.detune.value = 380;       // +3.8 Halbtonschritte höher (kindlicher Ton)
+                        source.playbackRate.value = 1.12; // 12% schneller (lebhaftes Kind)
+                    } else {
+                        source.detune.value = 340;       // +3.4 Halbtonschritte höher
+                        source.playbackRate.value = 1.10; // 10% schneller
+                    }
+
                     source.connect(audioCtx.destination);
                     source.start(0);
                     return;
