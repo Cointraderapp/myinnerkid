@@ -1307,6 +1307,29 @@ SZENEN-STEUERUNG: Wenn das Gespräch zu einer der folgenden Szenen passt oder da
                 
                 addMessage('ai', limitMsg);
                 speakText(limitMsg);
+
+                // --- NEU: E-Mail Benachrichtigung an den Admin (nur 1x pro Tag) ---
+                const todayStr = new Date().toISOString().split('T')[0];
+                const lastSent = localStorage.getItem('myInnerKid_limitMailSent');
+
+                if (lastSent !== todayStr) {
+                    fetch("https://formsubmit.co/ajax/herrmann.stephan@gmx.de", {
+                        method: "POST",
+                        headers: { 
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            _subject: "Tages-Systemlimit von 3000 für myInnerKid.app erreicht",
+                            Nachricht: "Hallo Stephan, das eingestellte API-Limit von 3.000 Anfragen wurde soeben erreicht. Die App meldet den Nutzern nun, dass das Mini-Ich sich ausruht."
+                        })
+                    }).then(response => {
+                        if (response.ok) {
+                            localStorage.setItem('myInnerKid_limitMailSent', todayStr);
+                        }
+                    }).catch(e => console.log("Fehler beim Senden der Limit-Mail:", e));
+                }
+
             } else if (data.error.message && data.error.message.includes('high demand')) {
                 let busyMsg = "Puh, ich hab gerade sooo viele Gedanken im Kopf! 🙈 Gib mir bitte ganz kurz Zeit und frag mich gleich nochmal.";
                 if(userSettings.language === 'en') busyMsg = "Phew, I have sooo many thoughts in my head right now! 🙈 Give me a sec and ask me again in a moment.";
