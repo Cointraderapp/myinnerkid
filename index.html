@@ -74,7 +74,7 @@
 
         .menu-btn {
             background: none; border: none; color: var(--text-dim);
-            font-size: 22px; cursor: pointer; padding: 5px;
+            font-size: 30px; line-height: 1; cursor: pointer; padding: 2px 5px;
         }
 
         /* --- Setup Screen --- */
@@ -155,7 +155,7 @@
         .audio-btn { background: none; border: none; cursor: pointer; font-size: 12px; opacity: 0.6; transition: opacity 0.2s; margin-left: 8px; }
         .audio-btn:hover { opacity: 1; }
 
-        /* --- Input Area (Angepasst für Smartphones: Eingabefeld etwas höher platziert) --- */
+        /* --- Input Area --- */
         #input-area { 
             display: flex; 
             align-items: center; 
@@ -197,7 +197,7 @@
 <div id="app-container">
 
     <header class="app-header">
-        <div style="width: 24px;"></div> 
+        <div style="width: 30px;"></div> 
         <div class="brand-logo">
             <div class="v5-title title-text">Mein inneres Kind</div>
             <div class="v5-sub sub-text">Sprich mit deinem 5-jährigen Ich!</div>
@@ -304,10 +304,23 @@
         </div>
     </div>
 
+    <!-- Bestätigungs-Modal für Zurücksetzen (App-Design) -->
+    <div class="modal-overlay" id="confirm-modal">
+        <div class="modal-content" style="text-align: center; max-width: 320px;">
+            <h3 class="modal-title" id="confirm-modal-title">Erinnerungen zurücksetzen</h3>
+            <div class="modal-text" id="confirm-modal-text" style="margin-bottom: 25px; font-size: 13px; line-height: 1.5;">
+                Möchtest du wirklich alle freigeschalteten Erinnerungen zurücksetzen?
+            </div>
+            <div style="display: flex; gap: 10px; justify-content: center;">
+                <button class="support-btn" id="confirm-btn-cancel" onclick="closeModal('confirm-modal')" style="background-color: #38322e; color: #ccc; margin-top: 0; flex: 1;">Abbrechen</button>
+                <button class="support-btn" id="confirm-btn-ok" onclick="executeResetMemories()" style="background-color: #d9534f; color: #fff; margin-top: 0; flex: 1;">Zurücksetzen</button>
+            </div>
+        </div>
+    </div>
+
     <!-- App-Idee & FAQ Modal -->
     <div class="modal-overlay" id="faq-modal">
         <div class="modal-content">
-            <button class="modal-close" onclick="closeModal('faq-modal')">×</button>
             <button class="support-btn" onclick="closeModal('faq-modal')" style="margin-bottom: 15px;">Schließen</button>
             <h3 class="modal-title">App-Idee & FAQ</h3>
             
@@ -354,32 +367,30 @@
         </div>
     </div>
 
-    <!-- Datenschutz Modal -->
+    <!-- Datenschutz Modal (Nur mit Button "Verstanden" unten) -->
     <div class="modal-overlay" id="privacy-modal">
         <div class="modal-content">
-            <button class="modal-close" onclick="closeModal('privacy-modal')">×</button>
-            <button class="support-btn" onclick="closeModal('privacy-modal')" style="margin-bottom: 15px;">Schließen</button>
-            <h3 class="modal-title">Datenschutz</h3>
-            <div class="modal-text">
+            <h3 class="modal-title" id="privacy-modal-title">Datenschutz</h3>
+            <div class="modal-text" id="privacy-modal-text">
                 <strong>Dein Raum ist sicher.</strong><br><br>
                 Alle Chat-Verläufe und Einstellungen werden ausschließlich lokal auf deinem Gerät (in deinem Browser) gespeichert.<br><br>
                 Es gibt keine Benutzerdatenbank und wir speichern keine persönlichen Daten auf unseren Servern. Um die Antworten zu generieren, kommuniziert die App verschlüsselt mit der Google Gemini Schnittstelle.
             </div>
-            <button class="support-btn" onclick="closeModal('privacy-modal')">Verstanden</button>
+            <button class="support-btn" id="privacy-btn" onclick="closeModal('privacy-modal')">Verstanden</button>
         </div>
     </div>
 
     <!-- Impressum Modal -->
     <div class="modal-overlay" id="impressum-modal">
         <div class="modal-content">
-            <button class="modal-close" onclick="closeModal('impressum-modal')">×</button>
             <button class="support-btn" onclick="closeModal('impressum-modal')" style="margin-bottom: 15px;">Schließen</button>
             <h3 class="modal-title">Impressum</h3>
             <div class="modal-text" style="font-size: 13px; line-height: 1.6;">
                 <strong>Angaben gemäß § 5 DDG</strong><br>
                 Stephan Herrmann<br>
                 Sondershäuser Straße 36<br>
-                99091 Erfurt<br><br>
+                99091 Erfurt<br>
+                Deutschland<br><br>
                 <strong>Kontakt</strong><br>
                 Telefon: +49 157 57790198<br>
                 E-Mail: herrmann.stephan@gmx.de<br><br>
@@ -389,7 +400,8 @@
                 <strong>Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV</strong><br>
                 Stephan Herrmann<br>
                 Sondershäuser Straße 36<br>
-                99091 Erfurt<br><br>
+                99091 Erfurt<br>
+                Deutschland<br><br>
                 <strong>EU-Streitschlichtung</strong><br>
                 Die Europäische Kommission stellt eine Plattform zur Online-Streitbeilegung (OS) bereit: 
                 <a href="https://ec.europa.eu/consumers/odr/" target="_blank" style="color: var(--text-light); word-break: break-all;">https://ec.europa.eu/consumers/odr/</a>.<br>
@@ -523,6 +535,13 @@
         const menuPrivacy = document.getElementById('menu-privacy');
         const menuImpressum = document.getElementById('menu-impressum');
 
+        const confirmTitle = document.getElementById('confirm-modal-title');
+        const confirmText = document.getElementById('confirm-modal-text');
+        const confirmCancel = document.getElementById('confirm-btn-cancel');
+        const confirmOk = document.getElementById('confirm-btn-ok');
+
+        const privacyBtn = document.getElementById('privacy-btn');
+
         const albumModalTitle = document.getElementById('album-modal-title');
         const albumCloseBtn = document.getElementById('album-close-btn');
 
@@ -544,6 +563,13 @@
             menuResetMemories.innerHTML = "🗑️ Reset Memories";
             menuPrivacy.innerHTML = "🔒 Privacy Policy";
             menuImpressum.innerHTML = "📝 Imprint";
+
+            if(confirmTitle) confirmTitle.innerText = "Reset Memories";
+            if(confirmText) confirmText.innerText = "Do you really want to reset all unlocked memories?";
+            if(confirmCancel) confirmCancel.innerText = "Cancel";
+            if(confirmOk) confirmOk.innerText = "Reset";
+
+            if(privacyBtn) privacyBtn.innerText = "Got it";
 
             if(albumModalTitle) albumModalTitle.innerText = "My Memories";
             if(albumCloseBtn) albumCloseBtn.innerText = "Close";
@@ -567,6 +593,13 @@
             menuPrivacy.innerHTML = "🔒 Privacidad";
             menuImpressum.innerHTML = "📝 Aviso Legal";
 
+            if(confirmTitle) confirmTitle.innerText = "Restablecer Recuerdos";
+            if(confirmText) confirmText.innerText = "¿Realmente quieres restablecer todos los recuerdos desbloqueados?";
+            if(confirmCancel) confirmCancel.innerText = "Cancelar";
+            if(confirmOk) confirmOk.innerText = "Restablecer";
+
+            if(privacyBtn) privacyBtn.innerText = "Entendido";
+
             if(albumModalTitle) albumModalTitle.innerText = "Mis Recuerdos";
             if(albumCloseBtn) albumCloseBtn.innerText = "Cerrar";
         }
@@ -589,6 +622,13 @@
             menuPrivacy.innerHTML = "🔒 Confidentialité";
             menuImpressum.innerHTML = "📝 Mentions légales";
 
+            if(confirmTitle) confirmTitle.innerText = "Réinitialiser les Souvenirs";
+            if(confirmText) confirmText.innerText = "Veux-tu vraiment réinitialiser tous les souvenirs débloqués ?";
+            if(confirmCancel) confirmCancel.innerText = "Annuler";
+            if(confirmOk) confirmOk.innerText = "Réinitialiser";
+
+            if(privacyBtn) privacyBtn.innerText = "Compris";
+
             if(albumModalTitle) albumModalTitle.innerText = "Mes Souvenirs";
             if(albumCloseBtn) albumCloseBtn.innerText = "Fermer";
         }
@@ -610,6 +650,13 @@
             menuResetMemories.innerHTML = "🗑️ Erinnerungen zurücksetzen";
             menuPrivacy.innerHTML = "🔒 Datenschutz";
             menuImpressum.innerHTML = "📝 Impressum";
+
+            if(confirmTitle) confirmTitle.innerText = "Erinnerungen zurücksetzen";
+            if(confirmText) confirmText.innerText = "Möchtest du wirklich alle freigeschalteten Erinnerungen zurücksetzen?";
+            if(confirmCancel) confirmCancel.innerText = "Abbrechen";
+            if(confirmOk) confirmOk.innerText = "Zurücksetzen";
+
+            if(privacyBtn) privacyBtn.innerText = "Verstanden";
 
             if(albumModalTitle) albumModalTitle.innerText = "Meine Erinnerungen";
             if(albumCloseBtn) albumCloseBtn.innerText = "Schließen";
@@ -641,20 +688,17 @@
     }
 
     function resetMemories() {
-        const lang = userSettings.language || 'de';
-        let msg = "Möchtest du wirklich alle freigeschalteten Erinnerungen zurücksetzen?";
-        if(lang === 'en') msg = "Do you really want to reset all unlocked memories?";
-        if(lang === 'es') msg = "¡¿Realmente quieres restablecer todos los recuerdos desbloqueados?";
-        if(lang === 'fr') msg = "Veux-tu wirklich réinitialiser tous les souvenirs débloqués ?";
+        closeModal('menu-modal');
+        setTimeout(() => openModal('confirm-modal'), 100);
+    }
 
-        if (confirm(msg)) {
-            discoveredStages = ['neutral'];
-            bondingProgress = 0;
-            localStorage.setItem('myInnerKid_discovered', JSON.stringify(discoveredStages));
-            localStorage.setItem('myInnerKid_bonding', bondingProgress);
-            updateHeartUI(false);
-            closeModal('menu-modal');
-        }
+    function executeResetMemories() {
+        discoveredStages = ['neutral'];
+        bondingProgress = 0;
+        localStorage.setItem('myInnerKid_discovered', JSON.stringify(discoveredStages));
+        localStorage.setItem('myInnerKid_bonding', bondingProgress);
+        updateHeartUI(false);
+        closeModal('confirm-modal');
     }
 
     function updateStageImage() {
